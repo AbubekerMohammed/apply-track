@@ -76,7 +76,7 @@ export function DashboardCharts({
                 <TrendingUp className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                <h3 className="text-base font-semibold text-slate-900 dark:text-white">
                   Applications Velocity
                 </h3>
                 <span className="text-[11px] text-slate-400">
@@ -160,10 +160,10 @@ export function DashboardCharts({
                 <FunnelIcon className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                <h3 className="text-base font-semibold text-slate-900 dark:text-white">
                   Applied-to-Offer Funnel
                 </h3>
-                <span className="text-[11px] text-slate-400">
+                <span className="text-xs text-slate-500 dark:text-slate-400">
                   Conversion rates across interview stages
                 </span>
               </div>
@@ -224,10 +224,10 @@ export function DashboardCharts({
               <CalendarDays className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="text-base font-semibold text-slate-900 dark:text-white">
                 Application Activity Heatmap
               </h3>
-              <span className="text-[11px] text-slate-400">
+              <span className="text-xs text-slate-500 dark:text-slate-400">
                 Consistency grid for the last 12 weeks (click any cell to view)
               </span>
             </div>

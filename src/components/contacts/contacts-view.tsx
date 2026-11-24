@@ -83,14 +83,14 @@ export function ContactsView({ initialContacts, userEmail }: ContactsViewProps) 
             <span className="text-slate-900 dark:text-slate-200">Contacts</span>
           </div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+            <h1 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">
               Contacts & Outreach
             </h1>
             <span className="text-xs px-2.5 py-0.5 rounded-full font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 tabular-nums">
               {contacts.length} Contacts
             </span>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
             {userEmail ? `${userEmail} • ` : ""}
             Manage professional connections, log outreach notes, and schedule follow-up reminders
           </p>

@@ -60,10 +60,10 @@ export default async function SettingsPage() {
           <span>/</span>
           <span className="text-slate-900 dark:text-slate-200">Settings</span>
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+        <h1 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">
           Settings & Integrations
         </h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400">
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           Manage your connected inboxes, classification review queue, and daily targets
         </p>
       </div>

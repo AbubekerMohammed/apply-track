@@ -221,17 +221,17 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Executive Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
-        <div className="space-y-1">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-200 dark:border-slate-800">
+        <div className="space-y-1.5">
           <div className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
             <span>Workspace</span>
             <span>/</span>
             <span className="text-slate-900 dark:text-slate-200">Dashboard</span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+          <h1 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">
             Job Search Pipeline
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-slate-500 dark:text-slate-400 tabular-nums">
             {user?.name || "Active Search"} &bull; {totalApplied} total applications logged &bull; {appliedToday}/{dailyGoal} applied today
           </p>
         </div>
@@ -239,14 +239,14 @@ export default async function DashboardPage() {
         <div className="flex items-center gap-2.5">
           <Link
             href="/applications"
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-slate-900 text-white dark:bg-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 font-medium text-xs transition-colors shadow-xs"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-slate-900 text-white dark:bg-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 font-medium text-sm transition-colors shadow-xs"
           >
             <Plus className="w-4 h-4" />
             <span>New Application</span>
           </Link>
           <Link
             href="/settings"
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium text-xs transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium text-sm transition-colors"
           >
             <span>Sync Settings</span>
           </Link>

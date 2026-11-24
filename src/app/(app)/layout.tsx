@@ -17,7 +17,7 @@ export default async function AppLayout({
   return (
     <div className="flex min-h-screen flex-col md:flex-row bg-slate-50 dark:bg-[#0b0f17] text-slate-900 dark:text-slate-100">
       <Sidebar user={session.user} />
-      <main className="flex-1 min-w-0 p-4 sm:p-6 md:p-8 overflow-y-auto">
+      <main className="flex-1 min-w-0 p-4 sm:p-6 md:p-8 overflow-y-auto text-[15px] leading-relaxed">
         <div className="max-w-7xl mx-auto">{children}</div>
       </main>
       <AICopilotDrawer />

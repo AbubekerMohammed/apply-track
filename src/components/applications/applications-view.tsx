@@ -284,10 +284,10 @@ export function ApplicationsView({
             <span>/</span>
             <span className="text-slate-900 dark:text-slate-200">Applications</span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+          <h1 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">
             Applications Pipeline
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
+          <p className="text-sm text-slate-500 dark:text-slate-400 tabular-nums">
             Showing {sortedApplications.length} of {applications.length} applications
           </p>
         </div>

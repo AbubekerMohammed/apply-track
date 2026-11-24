@@ -58,10 +58,10 @@ export function TodaysFocus({
             <Clock className="w-4 h-4" />
           </div>
           <div>
-            <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
               Today&apos;s Focus
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               Priority actions: follow-ups, referrals, and pending assessments
             </p>
           </div>
