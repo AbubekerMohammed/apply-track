@@ -154,35 +154,35 @@ export function TargetsView({ initialTargets, userEmail }: TargetsViewProps) {
       </div>
 
       {/* Metrics Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="p-4 rounded-xl bg-white dark:bg-[#11141A] border border-slate-200/90 dark:border-white/[0.08] shadow-2xs">
-          <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 dark:text-slate-500 font-bold">Total Targets</div>
-          <div className="text-2xl font-mono font-bold text-slate-900 dark:text-white mt-1 tabular-nums">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="p-4 rounded-xl bg-white dark:bg-[#131926] border border-slate-200 dark:border-slate-800 shadow-xs">
+          <div className="text-xs font-medium text-slate-500 dark:text-slate-400">Total Targets</div>
+          <div className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
             {totalCount}
           </div>
         </div>
 
         {/* Needs Referral Highlighting */}
-        <div className="p-4 rounded-xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-500/40 dark:border-amber-500/30 shadow-2xs">
-          <div className="text-[10px] font-mono uppercase tracking-wider text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+        <div className="p-4 rounded-xl bg-amber-50/60 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 shadow-xs">
+          <div className="text-xs font-semibold text-amber-700 dark:text-amber-300 flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-amber-500" />
             <span>Needs Referral</span>
           </div>
-          <div className="text-2xl font-mono font-bold text-amber-900 dark:text-amber-200 mt-1 tabular-nums">
+          <div className="text-2xl font-bold text-amber-900 dark:text-amber-200 mt-1">
             {needsReferralCount}
           </div>
         </div>
 
-        <div className="p-4 rounded-xl bg-white dark:bg-[#11141A] border border-slate-200/90 dark:border-white/[0.08] shadow-2xs">
-          <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 dark:text-slate-500 font-bold">Outreach Sent</div>
-          <div className="text-2xl font-mono font-bold text-blue-600 dark:text-blue-400 mt-1 tabular-nums">
+        <div className="p-4 rounded-xl bg-white dark:bg-[#131926] border border-slate-200 dark:border-slate-800 shadow-xs">
+          <div className="text-xs font-medium text-slate-500 dark:text-slate-400">Outreach Sent</div>
+          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">
             {outreachSentCount}
           </div>
         </div>
 
-        <div className="p-4 rounded-xl bg-white dark:bg-[#11141A] border border-slate-200/90 dark:border-white/[0.08] shadow-2xs">
-          <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 dark:text-slate-500 font-bold">Referrals Secured</div>
-          <div className="text-2xl font-mono font-bold text-emerald-600 dark:text-emerald-400 mt-1 tabular-nums">
+        <div className="p-4 rounded-xl bg-white dark:bg-[#131926] border border-slate-200 dark:border-slate-800 shadow-xs">
+          <div className="text-xs font-medium text-slate-500 dark:text-slate-400">Referrals Secured</div>
+          <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
             {referralSecuredCount}
           </div>
         </div>
@@ -281,11 +281,9 @@ export function TargetsView({ initialTargets, userEmail }: TargetsViewProps) {
                         </h3>
                         {isNeedsReferral && (
                           <span
-                            title="Needs Referral"
-                            className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white shadow-xs"
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-semibold bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800"
                           >
-                            <Flame className="w-2.5 h-2.5" />
-                            <span>NEEDS REF</span>
+                            Needs Referral
                           </span>
                         )}
                       </div>

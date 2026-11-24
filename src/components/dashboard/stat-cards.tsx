@@ -11,7 +11,7 @@ import {
   PhoneCall,
   XCircle,
   Ghost,
-  ArrowUpRight,
+  ArrowRight,
 } from "lucide-react";
 
 export interface DashboardStats {
@@ -31,190 +31,108 @@ interface StatCardsProps {
 }
 
 export function StatCards({ stats }: StatCardsProps) {
-  const activeInFlight = stats.interviews + stats.recruiterCalls + stats.assessments;
+  const cards = [
+    {
+      title: "Total Applied",
+      value: stats.applied,
+      subtitle: `${stats.heardBack} responses received`,
+      href: "/applications",
+      icon: Briefcase,
+      color: "text-blue-600 dark:text-blue-400",
+      bg: "bg-blue-50 dark:bg-blue-950/60",
+    },
+    {
+      title: "Response Rate",
+      value: `${stats.responseRate}%`,
+      subtitle: "Industry average: ~10-15%",
+      href: "/applications",
+      icon: TrendingUp,
+      color: "text-emerald-600 dark:text-emerald-400",
+      bg: "bg-emerald-50 dark:bg-emerald-950/60",
+    },
+    {
+      title: "Interviews",
+      value: stats.interviews,
+      subtitle: `${stats.recruiterCalls} recruiter calls scheduled`,
+      href: "/applications?stage=Interviewing",
+      icon: Video,
+      color: "text-purple-600 dark:text-purple-400",
+      bg: "bg-purple-50 dark:bg-purple-950/60",
+    },
+    {
+      title: "Offers",
+      value: stats.offers,
+      subtitle: stats.offers > 0 ? "Congratulations!" : "In active pipeline",
+      href: "/applications?stage=Offer",
+      icon: Award,
+      color: "text-amber-600 dark:text-amber-400",
+      bg: "bg-amber-50 dark:bg-amber-950/60",
+    },
+  ];
+
+  const stagesList = [
+    { name: "Applied", count: stats.applied, stage: "Applied", color: "bg-blue-500" },
+    { name: "Assessment", count: stats.assessments, stage: "Assessment", color: "bg-purple-500" },
+    { name: "Recruiter Call", count: stats.recruiterCalls, stage: "Recruiter Call", color: "bg-indigo-500" },
+    { name: "Interviewing", count: stats.interviews, stage: "Interviewing", color: "bg-amber-500" },
+    { name: "Offer", count: stats.offers, stage: "Offer", color: "bg-emerald-500" },
+    { name: "Rejected", count: stats.rejections, stage: "Rejected", color: "bg-rose-500" },
+    { name: "Ghosted", count: stats.ghosted, stage: "Ghosted", color: "bg-slate-400" },
+  ];
 
   return (
-    <div className="space-y-3 font-sans">
-      {/* Primary Telemetry Grid: 3 Hero Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {/* Metric 1: Total Volume */}
-        <Link
-          href="/applications"
-          className="p-4 rounded-xl bg-white dark:bg-[#11141A] border border-slate-200/90 dark:border-white/[0.08] hover:border-slate-400 dark:hover:border-white/20 transition-all shadow-2xs group flex flex-col justify-between"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 dark:text-slate-500 font-semibold">
-              Total Applications
-            </span>
-            <ArrowUpRight className="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-mono font-bold tracking-tight text-slate-900 dark:text-white tabular-nums">
-              {stats.applied}
-            </span>
-            <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">
-              submitted
-            </span>
-          </div>
-          <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
-            {stats.heardBack} received replies
-          </div>
-        </Link>
+    <div className="space-y-4">
+      {/* 4 Primary Metric Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {cards.map((card) => {
+          const Icon = card.icon;
+          return (
+            <Link
+              key={card.title}
+              href={card.href}
+              className="p-5 rounded-xl bg-white dark:bg-[#131926] border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all shadow-xs flex flex-col justify-between group"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                  {card.title}
+                </span>
+                <div className={`w-8 h-8 rounded-lg ${card.bg} ${card.color} flex items-center justify-center`}>
+                  <Icon className="w-4 h-4" />
+                </div>
+              </div>
 
-        {/* Metric 2: Response Rate */}
-        <Link
-          href="/applications"
-          className="p-4 rounded-xl bg-white dark:bg-[#11141A] border border-slate-200/90 dark:border-white/[0.08] hover:border-slate-400 dark:hover:border-white/20 transition-all shadow-2xs group flex flex-col justify-between"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 dark:text-slate-500 font-semibold">
-              Response Conversion
-            </span>
-            <span className="flex items-center gap-1 text-[11px] font-mono font-semibold text-emerald-600 dark:text-emerald-400">
-              <TrendingUp className="w-3 h-3" />
-              <span>Benchmark 15%</span>
-            </span>
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-mono font-bold tracking-tight text-slate-900 dark:text-white tabular-nums">
-              {stats.responseRate}%
-            </span>
-            <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">
-              response rate
-            </span>
-          </div>
-          <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
-            Based on {stats.applied} tracked applications
-          </div>
-        </Link>
-
-        {/* Metric 3: Active Pipeline in Flight */}
-        <Link
-          href="/applications?stage=Interviewing"
-          className="p-4 rounded-xl bg-white dark:bg-[#11141A] border border-slate-200/90 dark:border-white/[0.08] hover:border-slate-400 dark:hover:border-white/20 transition-all shadow-2xs group flex flex-col justify-between"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 dark:text-slate-500 font-semibold">
-              Active Pipeline
-            </span>
-            {stats.offers > 0 && (
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                <Award className="w-2.5 h-2.5" />
-                <span>{stats.offers} OFFER</span>
-              </span>
-            )}
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-mono font-bold tracking-tight text-slate-900 dark:text-white tabular-nums">
-              {activeInFlight}
-            </span>
-            <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">
-              in active progress
-            </span>
-          </div>
-          <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
-            {stats.interviews} interviews · {stats.recruiterCalls} screens · {stats.assessments} OAs
-          </div>
-        </Link>
+              <div className="mt-4">
+                <div className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                  {card.value}
+                </div>
+                <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center justify-between">
+                  <span>{card.subtitle}</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+              </div>
+            </Link>
+          );
+        })}
       </div>
 
-      {/* Stage Breakdown Ledger: Precision Pipeline Ribbon */}
-      <div className="grid grid-cols-2 sm:grid-cols-6 gap-2">
-        {/* Assessment */}
-        <Link
-          href="/applications?stage=Assessment"
-          className="p-3 rounded-lg bg-white dark:bg-[#11141A] border border-slate-200/80 dark:border-white/[0.06] hover:border-sky-400 dark:hover:border-sky-500 transition-colors group"
-        >
-          <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-[11px] font-medium text-slate-600 dark:text-slate-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-sky-500" />
-              <span>Assessments</span>
+      {/* Stage Breakdown Filter Pills */}
+      <div className="p-3.5 rounded-xl bg-white dark:bg-[#131926] border border-slate-200 dark:border-slate-800 shadow-xs flex flex-wrap items-center gap-2">
+        <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 mr-2">
+          Pipeline Stages:
+        </span>
+        {stagesList.map((item) => (
+          <Link
+            key={item.name}
+            href={`/applications?stage=${encodeURIComponent(item.stage)}`}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800 transition-colors"
+          >
+            <span className={`w-2 h-2 rounded-full ${item.color}`} />
+            <span>{item.name}</span>
+            <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+              {item.count}
             </span>
-            <span className="font-mono text-xs font-bold text-slate-900 dark:text-white tabular-nums">
-              {stats.assessments}
-            </span>
-          </div>
-        </Link>
-
-        {/* Recruiter Calls */}
-        <Link
-          href="/applications?stage=Recruiter Call"
-          className="p-3 rounded-lg bg-white dark:bg-[#11141A] border border-slate-200/80 dark:border-white/[0.06] hover:border-violet-400 dark:hover:border-violet-500 transition-colors group"
-        >
-          <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-[11px] font-medium text-slate-600 dark:text-slate-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-violet-500" />
-              <span>Screens</span>
-            </span>
-            <span className="font-mono text-xs font-bold text-slate-900 dark:text-white tabular-nums">
-              {stats.recruiterCalls}
-            </span>
-          </div>
-        </Link>
-
-        {/* Interviewing */}
-        <Link
-          href="/applications?stage=Interviewing"
-          className="p-3 rounded-lg bg-white dark:bg-[#11141A] border border-slate-200/80 dark:border-white/[0.06] hover:border-amber-400 dark:hover:border-amber-500 transition-colors group"
-        >
-          <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-[11px] font-medium text-slate-600 dark:text-slate-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-              <span>Interviews</span>
-            </span>
-            <span className="font-mono text-xs font-bold text-slate-900 dark:text-white tabular-nums">
-              {stats.interviews}
-            </span>
-          </div>
-        </Link>
-
-        {/* Offers */}
-        <Link
-          href="/applications?stage=Offer"
-          className="p-3 rounded-lg bg-white dark:bg-[#11141A] border border-slate-200/80 dark:border-white/[0.06] hover:border-emerald-400 dark:hover:border-emerald-500 transition-colors group"
-        >
-          <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-[11px] font-medium text-slate-600 dark:text-slate-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              <span>Offers</span>
-            </span>
-            <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
-              {stats.offers}
-            </span>
-          </div>
-        </Link>
-
-        {/* Rejections */}
-        <Link
-          href="/applications?stage=Rejected"
-          className="p-3 rounded-lg bg-white dark:bg-[#11141A] border border-slate-200/80 dark:border-white/[0.06] hover:border-slate-400 transition-colors group"
-        >
-          <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-[11px] font-medium text-slate-600 dark:text-slate-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-              <span>Rejections</span>
-            </span>
-            <span className="font-mono text-xs font-bold text-slate-500 dark:text-slate-400 tabular-nums">
-              {stats.rejections}
-            </span>
-          </div>
-        </Link>
-
-        {/* Ghosted */}
-        <Link
-          href="/applications?stage=Ghosted"
-          className="p-3 rounded-lg bg-white dark:bg-[#11141A] border border-slate-200/80 dark:border-white/[0.06] hover:border-slate-400 transition-colors group"
-        >
-          <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-[11px] font-medium text-slate-600 dark:text-slate-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-              <span>Ghosted</span>
-            </span>
-            <span className="font-mono text-xs font-bold text-slate-500 dark:text-slate-400 tabular-nums">
-              {stats.ghosted}
-            </span>
-          </div>
-        </Link>
+          </Link>
+        ))}
       </div>
     </div>
   );

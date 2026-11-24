@@ -3,53 +3,38 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #f8f9fa;
+  --background: #f8fafc;
   --foreground: #0f172a;
   --card: #ffffff;
   --card-border: #e2e8f0;
-  --accent: #0f172a;
-  --accent-foreground: #ffffff;
 }
 
 .dark {
-  --background: #090b0e;
-  --foreground: #f1f5f9;
-  --card: #11141a;
-  --card-border: rgba(255, 255, 255, 0.08);
-  --accent: #38bdf8;
-  --accent-foreground: #090b0e;
+  --background: #0b0f17;
+  --foreground: #f8fafc;
+  --card: #131926;
+  --card-border: #1e293b;
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
   min-height: 100vh;
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum";
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom hairline borders and tactile surfaces */
-.hairline-card {
+/* Clean, standard card styling */
+.standard-card {
   background-color: var(--card);
   border: 1px solid var(--card-border);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
 }
 
-.dark .hairline-card {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.03);
-}
-
-/* Custom scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.3);
-  border-radius: 9999px;
-}
-.dark ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+/* Clean focus rings */
+input:focus, select:focus, textarea:focus, button:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 1px;
 }
