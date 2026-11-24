@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { Sidebar } from "@/components/sidebar";
+import { AICopilotDrawer } from "@/components/ai/ai-copilot-drawer";
 
 export default async function AppLayout({
   children,
@@ -19,6 +20,7 @@ export default async function AppLayout({
       <main className="flex-1 min-w-0 p-4 sm:p-6 md:p-8 overflow-y-auto">
         <div className="max-w-7xl mx-auto">{children}</div>
       </main>
+      <AICopilotDrawer />
     </div>
   );
 }

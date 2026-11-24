@@ -4,6 +4,7 @@ import { Settings, User, Mail, Moon, Sun, CheckCircle2 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { InboxConnections } from "@/components/settings/inbox-connections";
 import { NeedsReviewQueue } from "@/components/settings/needs-review-queue";
+import { WeeklyDigestSettings } from "@/components/settings/weekly-digest-settings";
 import { revalidatePath } from "next/cache";
 
 export default async function SettingsPage() {
@@ -128,6 +129,9 @@ export default async function SettingsPage() {
           </button>
         </form>
       </div>
+
+      {/* Smart Features: Weekly Email Digest & Auto-Ghosting */}
+      <WeeklyDigestSettings />
 
       {/* Appearance & Dark Mode Card */}
       <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
