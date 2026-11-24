@@ -5,7 +5,7 @@ import { Mail, Send, Ghost, Eye, CheckCircle2, Clock } from "lucide-react";
 
 export function WeeklyDigestSettings() {
   const [loadingEmail, setLoadingEmail] = React.useState(false);
-  const [emailStatus, setEmailStatus] = React.useState<string | null>(null);
+  const [emailStatus, setEmailStatus] = React.useState<{ ok: boolean; text: string } | null>(null);
 
   const [loadingGhost, setLoadingGhost] = React.useState(false);
   const [ghostStatus, setGhostStatus] = React.useState<string | null>(null);
@@ -17,14 +17,14 @@ export function WeeklyDigestSettings() {
     setEmailStatus(null);
     try {
       const res = await fetch("/api/email/weekly-summary", { method: "POST" });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok) {
-        setEmailStatus(data.message || "Weekly summary email successfully sent!");
+        setEmailStatus({ ok: true, text: data.message || "Weekly summary sent." });
       } else {
-        setEmailStatus(`Error: ${data.error || "Failed to send weekly email"}`);
+        setEmailStatus({ ok: false, text: data.error || "Failed to send weekly email" });
       }
     } catch {
-      setEmailStatus("Failed to send weekly summary email");
+      setEmailStatus({ ok: false, text: "Failed to send weekly summary email" });
     } finally {
       setLoadingEmail(false);
     }
@@ -69,9 +69,16 @@ export function WeeklyDigestSettings() {
         </div>
 
         {emailStatus && (
-          <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-700 dark:text-emerald-300 flex items-center gap-2">
+          <div
+            role="status"
+            className={`p-3 rounded-lg border text-xs flex items-center gap-2 ${
+              emailStatus.ok
+                ? "bg-emerald-50 dark:bg-emerald-950/50 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300"
+                : "bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-900 text-amber-800 dark:text-amber-300"
+            }`}
+          >
             <CheckCircle2 className="w-4 h-4 shrink-0" />
-            <span>{emailStatus}</span>
+            <span>{emailStatus.text}</span>
           </div>
         )}
 
@@ -82,7 +89,7 @@ export function WeeklyDigestSettings() {
             className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium rounded-lg bg-slate-900 text-white dark:bg-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors disabled:opacity-50 shadow-xs"
           >
             <Send className="w-3.5 h-3.5" />
-            <span>{loadingEmail ? "Generating & Sending..." : "Send Weekly Summary Now"}</span>
+            <span>{loadingEmail ? "Sending..." : "Send Weekly Summary Now"}</span>
           </button>
 
           <a
@@ -92,7 +99,7 @@ export function WeeklyDigestSettings() {
             className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
           >
             <Eye className="w-3.5 h-3.5" />
-            <span>Preview HTML Template</span>
+            <span>Preview Digest</span>
           </a>
         </div>
       </div>

@@ -6,15 +6,40 @@ import { InboxConnections } from "@/components/settings/inbox-connections";
 import { NeedsReviewQueue } from "@/components/settings/needs-review-queue";
 import { WeeklyDigestSettings } from "@/components/settings/weekly-digest-settings";
 import { revalidatePath } from "next/cache";
-import { isDemoMode } from "@/lib/demo-mode";
+import { isProviderConfigured, MAIL_PROVIDERS } from "@/lib/email/oauth";
 
-export default async function SettingsPage() {
+const MAIL_ERRORS: Record<string, string> = {
+  denied: "Permission was not granted, so the inbox wasn't connected.",
+  invalid_state: "The connection request expired. Please try connecting again.",
+  connect_failed: "We couldn't finish connecting the inbox. Please try again.",
+  not_configured: "This inbox provider isn't available yet.",
+  invalid_provider: "Unknown inbox provider.",
+};
+
+export default async function SettingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const session = await auth();
   const userId = session?.user?.id;
 
   if (!userId) return null;
 
-  const [user, reviewItems, userApplications] = await Promise.all([
+  const params = await searchParams;
+  const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
+  const mailConnected = one(params.mailConnected);
+  const mailError = one(params.mailError);
+  const notice = mailConnected
+    ? {
+        kind: "success" as const,
+        text: `${mailConnected === "gmail" ? "Gmail" : "Outlook"} connected. Your recent job emails have been imported.`,
+      }
+    : mailError
+      ? { kind: "error" as const, text: MAIL_ERRORS[mailError] ?? "Inbox connection failed." }
+      : null;
+
+  const [user, reviewItems, userApplications, mailAccounts] = await Promise.all([
     prisma.user.findUnique({
       where: { id: userId },
     }),
@@ -27,7 +52,20 @@ export default async function SettingsPage() {
       select: { id: true, company: true, role: true },
       orderBy: { createdAt: "desc" },
     }),
+    prisma.account.findMany({
+      where: { userId, provider: { in: MAIL_PROVIDERS } },
+      select: { provider: true, providerAccountId: true },
+    }),
   ]);
+
+  const mailbox = (provider: "gmail" | "outlook") => {
+    const account = mailAccounts.find((a) => a.provider === provider);
+    return {
+      connected: Boolean(account),
+      address: account?.providerAccountId ?? null,
+      configured: isProviderConfigured(provider),
+    };
+  };
 
   async function updateDailyGoal(formData: FormData) {
     "use server";
@@ -35,7 +73,7 @@ export default async function SettingsPage() {
     if (!userSession?.user?.id) return;
 
     const goal = parseInt(formData.get("dailyGoal") as string, 10);
-    if (isNaN(goal) || goal < 1) return;
+    if (isNaN(goal) || goal < 1 || goal > 100) return;
 
     await prisma.user.update({
       where: { id: userSession.user.id },
@@ -75,11 +113,7 @@ export default async function SettingsPage() {
           <Mail className="w-4 h-4 text-slate-500 dark:text-slate-400" />
           <span>Connected Inboxes (Gmail & Outlook)</span>
         </h2>
-        <InboxConnections
-          initialGmailConnected={Boolean(user?.gmailConnected)}
-          initialOutlookConnected={Boolean(user?.outlookConnected)}
-          demoMode={isDemoMode()}
-        />
+        <InboxConnections gmail={mailbox("gmail")} outlook={mailbox("outlook")} notice={notice} />
       </div>
 
       {/* Needs Review Queue */}

@@ -8,6 +8,7 @@ export interface SyncResult {
   stagesUpdated: number;
   needsReviewCount: number;
   duplicatesSkipped: number;
+  unrelatedSkipped: number;
 }
 
 export async function processAndSyncEmails(
@@ -19,6 +20,7 @@ export async function processAndSyncEmails(
   let needsReviewCount = 0;
   let duplicatesSkipped = 0;
   let totalProcessed = 0;
+  let unrelatedSkipped = 0;
 
   for (const message of messages) {
     // 1. De-duplication check by messageId
@@ -52,6 +54,12 @@ export async function processAndSyncEmails(
 
     // 3. Classify message
     const extracted = await classifyEmail(message);
+
+    // Mail that isn't about a job application is ignored entirely and never stored.
+    if (extracted.classification === "other") {
+      unrelatedSkipped++;
+      continue;
+    }
     totalProcessed++;
 
     // 4. Try to find an existing matching application
@@ -182,5 +190,6 @@ export async function processAndSyncEmails(
     stagesUpdated,
     needsReviewCount,
     duplicatesSkipped,
+    unrelatedSkipped,
   };
 }
