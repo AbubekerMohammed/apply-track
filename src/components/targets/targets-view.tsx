@@ -155,34 +155,34 @@ export function TargetsView({ initialTargets, userEmail }: TargetsViewProps) {
 
       {/* Metrics Bar */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-          <div className="text-xs text-slate-400">Total Targets</div>
-          <div className="text-xl font-bold text-slate-900 dark:text-slate-100 mt-1">
+        <div className="p-4 rounded-xl bg-white dark:bg-[#11141A] border border-slate-200/90 dark:border-white/[0.08] shadow-2xs">
+          <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 dark:text-slate-500 font-bold">Total Targets</div>
+          <div className="text-2xl font-mono font-bold text-slate-900 dark:text-white mt-1 tabular-nums">
             {totalCount}
           </div>
         </div>
 
         {/* Needs Referral Highlighting */}
-        <div className="p-4 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-300/80 dark:border-amber-800/80 shadow-xs">
-          <div className="text-xs font-semibold text-amber-700 dark:text-amber-300 flex items-center gap-1.5">
-            <Flame className="w-3.5 h-3.5" />
+        <div className="p-4 rounded-xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-500/40 dark:border-amber-500/30 shadow-2xs">
+          <div className="text-[10px] font-mono uppercase tracking-wider text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
             <span>Needs Referral</span>
           </div>
-          <div className="text-xl font-bold text-amber-900 dark:text-amber-200 mt-1">
+          <div className="text-2xl font-mono font-bold text-amber-900 dark:text-amber-200 mt-1 tabular-nums">
             {needsReferralCount}
           </div>
         </div>
 
-        <div className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-          <div className="text-xs text-slate-400">Outreach Sent</div>
-          <div className="text-xl font-bold text-blue-600 dark:text-blue-400 mt-1">
+        <div className="p-4 rounded-xl bg-white dark:bg-[#11141A] border border-slate-200/90 dark:border-white/[0.08] shadow-2xs">
+          <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 dark:text-slate-500 font-bold">Outreach Sent</div>
+          <div className="text-2xl font-mono font-bold text-blue-600 dark:text-blue-400 mt-1 tabular-nums">
             {outreachSentCount}
           </div>
         </div>
 
-        <div className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-          <div className="text-xs text-slate-400">Referrals Secured</div>
-          <div className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
+        <div className="p-4 rounded-xl bg-white dark:bg-[#11141A] border border-slate-200/90 dark:border-white/[0.08] shadow-2xs">
+          <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 dark:text-slate-500 font-bold">Referrals Secured</div>
+          <div className="text-2xl font-mono font-bold text-emerald-600 dark:text-emerald-400 mt-1 tabular-nums">
             {referralSecuredCount}
           </div>
         </div>

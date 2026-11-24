@@ -11,10 +11,11 @@ import {
   Users,
   Settings,
   LogOut,
-  Sparkles,
+  Compass,
   Menu,
   X,
   UserCheck,
+  Radio,
 } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -23,26 +24,31 @@ const NAV_ITEMS = [
     name: "Dashboard",
     href: "/dashboard",
     icon: LayoutDashboard,
+    badge: "⌘1",
   },
   {
     name: "Applications",
     href: "/applications",
     icon: Briefcase,
+    badge: "⌘2",
   },
   {
     name: "Targets & Referrals",
     href: "/targets",
     icon: Target,
+    badge: "⌘3",
   },
   {
     name: "Contacts",
     href: "/contacts",
     icon: Users,
+    badge: "⌘4",
   },
   {
     name: "Settings",
     href: "/settings",
     icon: Settings,
+    badge: "⌘5",
   },
 ];
 
@@ -62,31 +68,39 @@ export function Sidebar({ user }: { user?: { name?: string | null; email?: strin
     .toUpperCase();
 
   const navContent = (
-    <div className="flex flex-col h-full bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100">
+    <div className="flex flex-col h-full bg-[#FAFAFC] dark:bg-[#0C0E12] border-r border-slate-200/90 dark:border-white/[0.07] text-slate-900 dark:text-slate-100 font-sans selection:bg-slate-800 selection:text-white">
       {/* Brand Header */}
-      <div className="flex items-center justify-between px-6 py-5 border-b border-slate-200 dark:border-slate-800">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200/80 dark:border-white/[0.06]">
         <Link
           href="/dashboard"
-          className="flex items-center gap-3 font-bold text-lg tracking-tight hover:opacity-90 transition-opacity"
+          className="flex items-center gap-2.5 group"
           onClick={() => setMobileOpen(false)}
         >
-          <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm shadow-blue-500/30">
-            <Sparkles className="w-5 h-5" />
+          {/* Bespoke Telemetry Mark */}
+          <div className="w-8 h-8 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-950 flex items-center justify-center font-mono font-bold text-xs tracking-tighter shadow-xs group-hover:scale-105 transition-transform">
+            <span>AT</span>
           </div>
+
           <div className="flex flex-col">
-            <span className="font-extrabold text-blue-600 dark:text-blue-400 leading-none">
-              ApplyTrack
-            </span>
-            <span className="text-xs text-slate-400 dark:text-slate-500 font-normal mt-0.5">
-              Smart Job Tracker
+            <div className="flex items-center gap-1.5">
+              <span className="font-bold text-sm tracking-tight text-slate-900 dark:text-white">
+                ApplyTrack
+              </span>
+              <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold uppercase tracking-wider bg-slate-200/70 dark:bg-white/10 text-slate-600 dark:text-slate-400">
+                PRO
+              </span>
+            </div>
+            <span className="text-[11px] font-mono text-slate-400 dark:text-slate-500">
+              Career Pipeline Deck
             </span>
           </div>
         </Link>
+
         <div className="md:hidden">
           <button
             onClick={() => setMobileOpen(false)}
             aria-label="Close menu"
-            className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
           >
             <X className="w-5 h-5" />
           </button>
@@ -94,9 +108,9 @@ export function Sidebar({ user }: { user?: { name?: string | null; email?: strin
       </div>
 
       {/* Navigation Links */}
-      <div className="flex-1 py-6 px-3 space-y-1 overflow-y-auto">
-        <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-          Workspace
+      <div className="flex-1 py-5 px-3 space-y-1 overflow-y-auto">
+        <div className="px-3 mb-2 text-[10px] font-mono font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
+          Navigation
         </div>
         {NAV_ITEMS.map((item) => {
           const isActive =
@@ -108,47 +122,56 @@ export function Sidebar({ user }: { user?: { name?: string | null; email?: strin
               key={item.href}
               href={item.href}
               onClick={() => setMobileOpen(false)}
-              className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all group ${
                 isActive
-                  ? "bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 shadow-xs"
-                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200"
+                  ? "bg-slate-900 dark:bg-white/[0.08] text-white dark:text-white shadow-xs"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-white/[0.04] hover:text-slate-900 dark:hover:text-slate-200"
               }`}
             >
-              <Icon
-                className={`w-5 h-5 transition-colors ${
+              <div className="flex items-center gap-2.5 min-w-0">
+                <Icon
+                  className={`w-4 h-4 shrink-0 transition-colors ${
+                    isActive
+                      ? "text-white dark:text-white"
+                      : "text-slate-400 dark:text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300"
+                  }`}
+                />
+                <span className="truncate">{item.name}</span>
+              </div>
+              <span
+                className={`text-[10px] font-mono transition-opacity ${
                   isActive
-                    ? "text-blue-600 dark:text-blue-400"
-                    : "text-slate-400 dark:text-slate-500"
+                    ? "text-slate-300 dark:text-slate-400 opacity-100"
+                    : "text-slate-400 dark:text-slate-600 opacity-0 group-hover:opacity-100"
                 }`}
-              />
-              <span>{item.name}</span>
-              {isActive && (
-                <span className="ml-auto w-1.5 h-5 rounded-full bg-blue-600 dark:bg-blue-400" />
-              )}
+              >
+                {item.badge}
+              </span>
             </Link>
           );
         })}
       </div>
 
-      {/* User & Settings Footer */}
-      <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
-        <div className="flex items-center justify-between px-1">
-          <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-            Appearance
-          </span>
+      {/* Account & System Footer */}
+      <div className="p-3 border-t border-slate-200/80 dark:border-white/[0.06] space-y-2">
+        <div className="flex items-center justify-between px-2 py-1">
+          <div className="flex items-center gap-1.5 text-[11px] font-mono text-slate-400 dark:text-slate-500">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Connected</span>
+          </div>
           <ThemeToggle />
         </div>
 
-        <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/50 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 shrink-0 rounded-full bg-blue-600/10 dark:bg-blue-400/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-semibold text-xs border border-blue-600/20">
-              {initials || <UserCheck className="w-4 h-4" />}
+        <div className="p-2.5 rounded-xl bg-white dark:bg-[#12151B] border border-slate-200/80 dark:border-white/[0.06] flex items-center justify-between gap-2.5 shadow-2xs">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-7 h-7 shrink-0 rounded-lg bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-slate-200 flex items-center justify-center font-mono font-bold text-xs">
+              {initials || "US"}
             </div>
             <div className="min-w-0">
               <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 truncate">
                 {displayName}
               </p>
-              <p className="text-[11px] text-slate-400 dark:text-slate-500 truncate">
+              <p className="text-[10px] font-mono text-slate-400 dark:text-slate-500 truncate">
                 {displayEmail}
               </p>
             </div>
@@ -157,9 +180,9 @@ export function Sidebar({ user }: { user?: { name?: string | null; email?: strin
             onClick={() => signOut({ callbackUrl: "/login" })}
             title="Sign out"
             aria-label="Sign out"
-            className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+            className="p-1 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
@@ -169,12 +192,12 @@ export function Sidebar({ user }: { user?: { name?: string | null; email?: strin
   return (
     <>
       {/* Mobile Top Bar */}
-      <header className="md:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+      <header className="md:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-[#FAFAFC] dark:bg-[#0C0E12] border-b border-slate-200/90 dark:border-white/[0.07]">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white">
-            <Sparkles className="w-4 h-4" />
+          <div className="w-7 h-7 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-950 flex items-center justify-center font-mono font-bold text-xs">
+            AT
           </div>
-          <span className="font-bold text-blue-600 dark:text-blue-400 text-base">
+          <span className="font-bold text-slate-900 dark:text-white text-sm">
             ApplyTrack
           </span>
         </div>
@@ -183,7 +206,7 @@ export function Sidebar({ user }: { user?: { name?: string | null; email?: strin
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Open navigation menu"
-            className="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-white/[0.06]"
           >
             <Menu className="w-5 h-5" />
           </button>
@@ -193,7 +216,7 @@ export function Sidebar({ user }: { user?: { name?: string | null; email?: strin
       {/* Mobile Drawer Overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs md:hidden"
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs md:hidden"
           onClick={() => setMobileOpen(false)}
         >
           <div
@@ -206,7 +229,7 @@ export function Sidebar({ user }: { user?: { name?: string | null; email?: strin
       )}
 
       {/* Desktop Sidebar */}
-      <aside className="hidden md:block w-64 shrink-0 h-screen sticky top-0">
+      <aside className="hidden md:block w-60 shrink-0 h-screen sticky top-0">
         {navContent}
       </aside>
     </>
