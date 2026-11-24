@@ -112,7 +112,7 @@ export function AICopilotDrawer() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs shadow-md transition-all group"
+          className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-2.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 font-medium text-xs shadow-md border border-slate-800 dark:border-slate-200 transition-all group"
         >
           <MessageSquare className="w-4 h-4" />
           <span className="hidden sm:inline">Ask Assistant</span>

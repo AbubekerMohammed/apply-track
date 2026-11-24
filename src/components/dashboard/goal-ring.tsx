@@ -24,7 +24,7 @@ export function GoalRing({
   const isGoalReached = appliedToday >= dailyGoal;
 
   return (
-    <div className="p-6 rounded-xl bg-white dark:bg-[#131926] border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between h-full">
+    <div className="p-6 rounded-xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between h-full">
       {/* Header */}
       <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
         <div className="flex items-center gap-2">

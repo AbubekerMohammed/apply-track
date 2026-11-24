@@ -161,7 +161,7 @@ export function TargetsView({ initialTargets, userEmail }: TargetsViewProps) {
 
       {/* Metrics Bar */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="p-4 rounded-xl bg-white dark:bg-[#131926] border border-slate-200 dark:border-slate-800 shadow-xs">
+        <div className="p-4 rounded-xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 shadow-xs">
           <div className="text-xs font-medium text-slate-500 dark:text-slate-400">Total Targets</div>
           <div className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
             {totalCount}
@@ -179,14 +179,14 @@ export function TargetsView({ initialTargets, userEmail }: TargetsViewProps) {
           </div>
         </div>
 
-        <div className="p-4 rounded-xl bg-white dark:bg-[#131926] border border-slate-200 dark:border-slate-800 shadow-xs">
+        <div className="p-4 rounded-xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 shadow-xs">
           <div className="text-xs font-medium text-slate-500 dark:text-slate-400">Outreach Sent</div>
           <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">
             {outreachSentCount}
           </div>
         </div>
 
-        <div className="p-4 rounded-xl bg-white dark:bg-[#131926] border border-slate-200 dark:border-slate-800 shadow-xs">
+        <div className="p-4 rounded-xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 shadow-xs">
           <div className="text-xs font-medium text-slate-500 dark:text-slate-400">Referrals Secured</div>
           <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
             {referralSecuredCount}

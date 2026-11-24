@@ -50,7 +50,7 @@ export function TodaysFocus({
     followUpsDue.length + referralsNeeded.length + pendingAssessments.length;
 
   return (
-    <div className="p-6 rounded-xl bg-white dark:bg-[#131926] border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
+    <div className="p-6 rounded-xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
         <div className="flex items-center gap-2.5">

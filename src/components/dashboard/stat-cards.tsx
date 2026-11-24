@@ -38,8 +38,8 @@ export function StatCards({ stats }: StatCardsProps) {
       subtitle: `${stats.heardBack} responses received`,
       href: "/applications",
       icon: Briefcase,
-      color: "text-blue-600 dark:text-blue-400",
-      bg: "bg-blue-50 dark:bg-blue-950/60",
+      color: "text-slate-700 dark:text-slate-300",
+      bg: "bg-slate-100 dark:bg-slate-800",
     },
     {
       title: "Response Rate",
@@ -48,7 +48,7 @@ export function StatCards({ stats }: StatCardsProps) {
       href: "/applications",
       icon: TrendingUp,
       color: "text-emerald-600 dark:text-emerald-400",
-      bg: "bg-emerald-50 dark:bg-emerald-950/60",
+      bg: "bg-emerald-50 dark:bg-emerald-950/50",
     },
     {
       title: "Interviews",
@@ -56,8 +56,8 @@ export function StatCards({ stats }: StatCardsProps) {
       subtitle: `${stats.recruiterCalls} recruiter calls scheduled`,
       href: "/applications?stage=Interviewing",
       icon: Video,
-      color: "text-purple-600 dark:text-purple-400",
-      bg: "bg-purple-50 dark:bg-purple-950/60",
+      color: "text-blue-600 dark:text-blue-400",
+      bg: "bg-blue-50 dark:bg-blue-950/50",
     },
     {
       title: "Offers",
@@ -65,8 +65,8 @@ export function StatCards({ stats }: StatCardsProps) {
       subtitle: stats.offers > 0 ? "Congratulations!" : "In active pipeline",
       href: "/applications?stage=Offer",
       icon: Award,
-      color: "text-amber-600 dark:text-amber-400",
-      bg: "bg-amber-50 dark:bg-amber-950/60",
+      color: "text-slate-700 dark:text-slate-300",
+      bg: "bg-slate-100 dark:bg-slate-800",
     },
   ];
 
@@ -90,7 +90,7 @@ export function StatCards({ stats }: StatCardsProps) {
             <Link
               key={card.title}
               href={card.href}
-              className="p-5 rounded-xl bg-white dark:bg-[#131926] border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all shadow-xs flex flex-col justify-between group"
+              className="p-5 rounded-xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all shadow-xs flex flex-col justify-between group"
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
@@ -116,7 +116,7 @@ export function StatCards({ stats }: StatCardsProps) {
       </div>
 
       {/* Stage Breakdown Filter Pills */}
-      <div className="p-3.5 rounded-xl bg-white dark:bg-[#131926] border border-slate-200 dark:border-slate-800 shadow-xs flex flex-wrap items-center gap-2">
+      <div className="p-3.5 rounded-xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 shadow-xs flex flex-wrap items-center gap-2">
         <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 mr-2">
           Pipeline Stages:
         </span>

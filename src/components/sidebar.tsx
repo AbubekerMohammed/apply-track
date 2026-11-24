@@ -60,7 +60,7 @@ export function Sidebar({ user }: { user?: { name?: string | null; email?: strin
     .toUpperCase();
 
   const navContent = (
-    <div className="flex flex-col h-full bg-white dark:bg-[#0f141f] border-r border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100">
+    <div className="flex flex-col h-full bg-white dark:bg-[#0b0f17] border-r border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100">
       {/* Brand Header */}
       <div className="flex items-center justify-between px-6 py-5 border-b border-slate-200 dark:border-slate-800">
         <Link
@@ -68,7 +68,7 @@ export function Sidebar({ user }: { user?: { name?: string | null; email?: strin
           className="flex items-center gap-3"
           onClick={() => setMobileOpen(false)}
         >
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-xs">
+          <div className="w-8 h-8 rounded-lg bg-slate-900 dark:bg-white flex items-center justify-center text-white dark:text-slate-900 shadow-xs">
             <Briefcase className="w-4 h-4" />
           </div>
           <div className="flex flex-col">
@@ -109,8 +109,8 @@ export function Sidebar({ user }: { user?: { name?: string | null; email?: strin
               onClick={() => setMobileOpen(false)}
               className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                 isActive
-                  ? "bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 font-semibold"
-                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200"
+                  ? "bg-slate-100 text-slate-900 dark:bg-slate-800/80 dark:text-white font-semibold"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100/70 dark:hover:bg-slate-800/40 hover:text-slate-900 dark:hover:text-slate-200"
               }`}
             >
               <Icon
