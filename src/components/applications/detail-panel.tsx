@@ -15,7 +15,6 @@ import {
   Mail,
   CheckCircle2,
   AlertCircle,
-  Sparkles,
 } from "lucide-react";
 import { STAGES } from "./application-modal";
 

@@ -10,7 +10,6 @@ import {
   ShieldCheck,
   AlertCircle,
   Loader2,
-  Sparkles,
 } from "lucide-react";
 
 interface InboxConnectionsProps {

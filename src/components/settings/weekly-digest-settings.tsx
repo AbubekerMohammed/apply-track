@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Mail, Send, Ghost, Eye, CheckCircle2, Clock, Sparkles } from "lucide-react";
+import { Mail, Send, Ghost, Eye, CheckCircle2, Clock } from "lucide-react";
 
 export function WeeklyDigestSettings() {
   const [loadingEmail, setLoadingEmail] = React.useState(false);

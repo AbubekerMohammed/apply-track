@@ -18,7 +18,6 @@ import {
   ArrowDown,
   ChevronRight,
   RotateCcw,
-  Sparkles,
 } from "lucide-react";
 import { ApplicationModal, ApplicationFormData, STAGES, SOURCES } from "./application-modal";
 import { DetailPanel, ApplicationDetail } from "./detail-panel";

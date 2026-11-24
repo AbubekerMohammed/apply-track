@@ -9,7 +9,6 @@ import {
   SlidersHorizontal,
   CheckCircle2,
   Circle,
-  Sparkles,
   Send,
   MoreVertical,
   Trash2,

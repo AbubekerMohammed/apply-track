@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { Sparkles, ArrowRight, Lock, Mail, AlertCircle, ShieldCheck } from "lucide-react";
+import { Briefcase, ArrowRight, Lock, Mail, AlertCircle, ShieldCheck } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function LoginPage() {
@@ -108,38 +108,38 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950 transition-colors">
+    <div className="min-h-screen flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-[#0b0f17] text-slate-900 dark:text-slate-100 transition-colors">
       <div className="absolute top-6 right-6">
         <ThemeToggle />
       </div>
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <Link href="/" className="flex items-center justify-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
-            <Sparkles className="w-5 h-5" />
+        <Link href="/" className="flex items-center justify-center gap-2.5 mb-6 group">
+          <div className="w-9 h-9 rounded-lg bg-slate-900 dark:bg-white flex items-center justify-center text-white dark:text-slate-900 shadow-xs">
+            <Briefcase className="w-4 h-4" />
           </div>
-          <span className="font-extrabold text-2xl text-blue-600 dark:text-blue-400">
+          <span className="font-bold text-xl tracking-tight text-slate-900 dark:text-white">
             ApplyTrack
           </span>
         </Link>
-        <h2 className="text-center text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+        <h1 className="text-center text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
           Sign in to your account
-        </h2>
+        </h1>
         <p className="mt-2 text-center text-xs text-slate-500 dark:text-slate-400">
           Or{" "}
           <Link
             href="/register"
-            className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+            className="font-medium text-blue-600 dark:text-blue-400 hover:underline"
           >
             create a new account for free
           </Link>
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
-        <div className="bg-white dark:bg-slate-900 py-8 px-6 sm:px-10 shadow-xl shadow-slate-200/50 dark:shadow-none rounded-2xl border border-slate-200 dark:border-slate-800 space-y-6">
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white dark:bg-[#111622] py-8 px-6 sm:px-8 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
           {error && (
-            <div className="p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/50 flex items-center gap-2.5 text-xs text-red-600 dark:text-red-400">
+            <div className="p-3.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-center gap-2.5 text-xs text-rose-600 dark:text-rose-400">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
@@ -151,9 +151,9 @@ export default function LoginPage() {
               type="button"
               disabled={loading}
               onClick={() => handleDemoLogin("google-demo")}
-              className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+              className="flex items-center justify-center gap-2.5 px-3 py-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors disabled:opacity-50"
             >
-              <svg className="w-4 h-4" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                 <path
                   fill="#4285F4"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -178,9 +178,9 @@ export default function LoginPage() {
               type="button"
               disabled={loading}
               onClick={() => handleDemoLogin("microsoft-demo")}
-              className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+              className="flex items-center justify-center gap-2.5 px-3 py-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors disabled:opacity-50"
             >
-              <svg className="w-4 h-4" viewBox="0 0 23 23">
+              <svg className="w-4 h-4 shrink-0" viewBox="0 0 23 23">
                 <path fill="#f35325" d="M1 1h10v10H1z" />
                 <path fill="#81bc06" d="M12 1h10v10H12z" />
                 <path fill="#05a6f0" d="M1 12h10v10H1z" />
@@ -192,7 +192,7 @@ export default function LoginPage() {
 
           <div className="relative flex items-center justify-center">
             <div className="border-t border-slate-200 dark:border-slate-800 w-full" />
-            <span className="bg-white dark:bg-slate-900 px-3 text-[11px] uppercase tracking-wider text-slate-400 font-semibold absolute">
+            <span className="bg-white dark:bg-[#111622] px-3 text-[11px] uppercase tracking-wider text-slate-400 font-medium absolute">
               Or email and password
             </span>
           </div>
@@ -214,7 +214,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
               </div>
@@ -235,7 +235,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
               </div>
@@ -244,7 +244,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-md shadow-blue-500/20 transition-colors disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-slate-900 text-white dark:bg-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 font-medium text-sm transition-colors disabled:opacity-50 shadow-xs"
             >
               <span>{loading ? "Signing in..." : "Sign in with Email"}</span>
               <ArrowRight className="w-4 h-4" />
@@ -252,13 +252,13 @@ export default function LoginPage() {
           </form>
 
           {/* Phase 1 Multi-User Fast Testing Block */}
-          <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400">
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2.5">
+            <div className="flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400">
               <ShieldCheck className="w-4 h-4 text-emerald-500" />
-              <span>Phase 1 Verification: Test Accounts</span>
+              <span>Multi-User Test Accounts</span>
             </div>
             <p className="text-[11px] text-slate-400">
-              Click below to instantly log in as either test account to verify data isolation:
+              Click either test account to verify data isolation:
             </p>
             <div className="grid grid-cols-2 gap-2">
               <button
@@ -271,10 +271,10 @@ export default function LoginPage() {
                     "Password123!"
                   )
                 }
-                className="p-2 rounded-xl border border-blue-200 dark:border-blue-900 bg-blue-50/60 dark:bg-blue-950/40 text-[11px] font-semibold text-blue-700 dark:text-blue-300 hover:bg-blue-100 text-left transition-colors"
+                className="p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-[11px] text-left transition-colors"
               >
-                <span className="block font-bold">User A (Alice)</span>
-                <span className="text-[10px] opacity-80">alice.tester@...</span>
+                <span className="block font-semibold text-slate-900 dark:text-white">Alice (Dev)</span>
+                <span className="text-[10px] text-slate-500 truncate block">alice.tester@...</span>
               </button>
               <button
                 type="button"
@@ -286,10 +286,10 @@ export default function LoginPage() {
                     "Password123!"
                   )
                 }
-                className="p-2 rounded-xl border border-indigo-200 dark:border-indigo-900 bg-indigo-50/60 dark:bg-indigo-950/40 text-[11px] font-semibold text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 text-left transition-colors"
+                className="p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-[11px] text-left transition-colors"
               >
-                <span className="block font-bold">User B (Bob)</span>
-                <span className="text-[10px] opacity-80">bob.tester@...</span>
+                <span className="block font-semibold text-slate-900 dark:text-white">Bob (Design)</span>
+                <span className="text-[10px] text-slate-500 truncate block">bob.tester@...</span>
               </button>
             </div>
           </div>

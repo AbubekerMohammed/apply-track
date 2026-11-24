@@ -2,7 +2,6 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import {
-  Sparkles,
   ShieldCheck,
   Plus,
   ArrowRight,
@@ -221,31 +220,36 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 rounded-2xl p-6 sm:p-8 text-white shadow-lg shadow-blue-500/10">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-xs font-semibold backdrop-blur-xs">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Job Search Control Center</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-              Welcome back, {user?.name || "Job Hunter"}!
-            </h1>
-            <p className="text-blue-100 text-xs sm:text-sm max-w-xl">
-              Track your daily goals, advance applications through your pipeline, and
-              stay on top of interview follow-ups.
-            </p>
+      {/* Executive Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+            <span>Workspace</span>
+            <span>/</span>
+            <span className="text-slate-900 dark:text-slate-200">Dashboard</span>
           </div>
-          <div className="flex items-center gap-3">
-            <Link
-              href="/applications"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-blue-600 font-bold text-xs hover:bg-blue-50 transition-colors shadow-md"
-            >
-              <Plus className="w-4 h-4" />
-              <span>New Application</span>
-            </Link>
-          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+            Job Search Pipeline
+          </h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            {user?.name || "Active Search"} &bull; {totalApplied} total applications logged &bull; {appliedToday}/{dailyGoal} applied today
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2.5">
+          <Link
+            href="/applications"
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-slate-900 text-white dark:bg-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 font-medium text-xs transition-colors shadow-xs"
+          >
+            <Plus className="w-4 h-4" />
+            <span>New Application</span>
+          </Link>
+          <Link
+            href="/settings"
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium text-xs transition-colors"
+          >
+            <span>Sync Settings</span>
+          </Link>
         </div>
       </div>
 
