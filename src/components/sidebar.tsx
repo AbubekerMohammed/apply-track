@@ -165,9 +165,9 @@ export function Sidebar({ user }: { user?: { name?: string | null; email?: strin
   return (
     <>
       {/* Mobile Top Bar */}
-      <header className="md:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-white dark:bg-[#0f141f] border-b border-slate-200 dark:border-slate-800">
+      <header className="md:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-white dark:bg-[#0b0f17] border-b border-slate-200 dark:border-slate-800">
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center">
+          <div className="w-7 h-7 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center shadow-xs">
             <Briefcase className="w-3.5 h-3.5" />
           </div>
           <span className="font-bold text-slate-900 dark:text-white text-sm">
