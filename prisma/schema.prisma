@@ -1,0 +1,190 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  dailyGoal     Int       @default(10)
+  gmailConnected Boolean  @default(false)
+  outlookConnected Boolean @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  applications  Application[]
+  contacts      Contact[]
+  outreaches    Outreach[]
+  targetCompanies TargetCompany[]
+  emailEvents   EmailEvent[]
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String? @db.Text
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Contact {
+  id           String    @id @default(cuid())
+  userId       String
+  name         String
+  company      String
+  role         String?
+  linkedInUrl  String?
+  email        String?
+  relationship String?   @default("Colleague")
+  notes        String?   @db.Text
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  outreaches   Outreach[]
+  applicationsReferred Application[] @relation("ContactReferrer")
+
+  @@index([userId])
+}
+
+model TargetCompany {
+  id          String     @id @default(cuid())
+  userId      String
+  name        String
+  priority    String     @default("Medium") // High, Medium, Low
+  targetRole  String?
+  jobLink     String?
+  status      String     @default("Needs referral") // Needs referral, Outreach sent, Referral secured, Applied
+  checklist   Json?
+  notes       String?    @db.Text
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  outreaches  Outreach[]
+
+  @@index([userId])
+}
+
+model Outreach {
+  id              String         @id @default(cuid())
+  userId          String
+  contactId       String
+  targetCompanyId String?
+  channel         String         @default("LinkedIn") // LinkedIn, Email, Twitter, Phone, Other
+  date            DateTime       @default(now())
+  message         String?        @db.Text
+  response        String?        @default("Pending") // Pending, Replied, Referral Secured, Declined, No Response
+  followUpDate    DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contact         Contact        @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  targetCompany   TargetCompany? @relation(fields: [targetCompanyId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([contactId])
+}
+
+model Application {
+  id                String         @id @default(cuid())
+  userId            String
+  company           String
+  role              String
+  location          String?
+  jobLink           String?
+  dateApplied       DateTime       @default(now())
+  source            String?        @default("LinkedIn")
+  referred          Boolean        @default(false)
+  referrerContactId String?
+  stage             String         @default("Applied") // Applied, Assessment, Recruiter Call, Interviewing, Offer, Rejected, Ghosted
+  salaryRange       String?
+  notes             String?        @db.Text
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  referrerContact   Contact?       @relation("ContactReferrer", fields: [referrerContactId], references: [id], onDelete: SetNull)
+  stageHistory      StageHistory[]
+  emailEvents       EmailEvent[]
+
+  @@index([userId])
+  @@index([stage])
+}
+
+model StageHistory {
+  id            String      @id @default(cuid())
+  applicationId String
+  fromStage     String?
+  toStage       String
+  changedAt     DateTime    @default(now())
+  notes         String?     @db.Text
+
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+}
+
+model EmailEvent {
+  id            String       @id @default(cuid())
+  userId        String
+  applicationId String?
+  provider      String       // gmail, outlook
+  messageId     String
+  threadId      String?
+  date          DateTime
+  sender        String
+  subject       String
+  snippet       String       @db.Text
+  classification String      // application_confirmation, rejection, assessment_invite, recruiter_outreach, interview_invite, offer, other
+  confidence    Float?
+  extractedData Json?
+  needsReview   Boolean      @default(false)
+  isProcessed   Boolean      @default(true)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  application   Application? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, provider, messageId])
+  @@index([userId])
+  @@index([applicationId])
+}
