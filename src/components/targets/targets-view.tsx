@@ -123,20 +123,27 @@ export function TargetsView({ initialTargets, userEmail }: TargetsViewProps) {
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            <span>Targets & Referrals</span>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+            <span>Workspace</span>
+            <span>/</span>
+            <span className="text-slate-900 dark:text-slate-200">Targets & Referrals</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+              Targets & Referrals
+            </h1>
             {needsReferralCount > 0 && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 animate-pulse">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 tabular-nums">
                 <AlertCircle className="w-3 h-3" />
                 <span>{needsReferralCount} Need Referrals</span>
               </span>
             )}
-          </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            {userEmail ? `Scoped to ${userEmail} • ` : ""}
-            Systematic outreach to secure insider referrals before applying
+          </div>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            {userEmail ? `${userEmail} • ` : ""}
+            Track target companies and coordinate referral outreach before applying
           </p>
         </div>
 
@@ -145,7 +152,7 @@ export function TargetsView({ initialTargets, userEmail }: TargetsViewProps) {
             setEditingTarget(null);
             setModalOpen(true);
           }}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-xs"
+          className="inline-flex items-center justify-center gap-2 px-3.5 py-2 text-xs font-medium rounded-lg bg-slate-900 text-white dark:bg-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors shadow-xs"
         >
           <Plus className="w-4 h-4" />
           <span>Add Target Company</span>
@@ -229,8 +236,8 @@ export function TargetsView({ initialTargets, userEmail }: TargetsViewProps) {
       {/* Target Companies Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {filteredTargets.length === 0 ? (
-          <div className="col-span-full py-12 text-center p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 mx-auto flex items-center justify-center">
+          <div className="col-span-full py-12 text-center p-8 rounded-xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-3">
+            <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 mx-auto flex items-center justify-center">
               <Building2 className="w-6 h-6" />
             </div>
             <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
@@ -244,7 +251,7 @@ export function TargetsView({ initialTargets, userEmail }: TargetsViewProps) {
                 setEditingTarget(null);
                 setModalOpen(true);
               }}
-              className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold"
+              className="mt-2 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-slate-900 text-white dark:bg-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 text-xs font-medium shadow-xs"
             >
               <Plus className="w-4 h-4" />
               <span>Add Your First Target</span>
@@ -264,10 +271,10 @@ export function TargetsView({ initialTargets, userEmail }: TargetsViewProps) {
             return (
               <div
                 key={target.id}
-                className={`group relative p-5 rounded-2xl transition-all duration-200 flex flex-col justify-between ${
+                className={`group relative p-5 rounded-xl transition-all duration-200 flex flex-col justify-between ${
                   isNeedsReferral
-                    ? "bg-amber-50/30 dark:bg-amber-950/15 border-2 border-amber-400/90 dark:border-amber-500/80 shadow-md shadow-amber-500/5"
-                    : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs hover:border-slate-300 dark:hover:border-slate-700"
+                    ? "bg-amber-50/40 dark:bg-amber-950/20 border-2 border-amber-400/90 dark:border-amber-500/80 shadow-xs"
+                    : "bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 shadow-xs hover:border-slate-300 dark:hover:border-slate-700"
                 }`}
               >
                 {/* Card Top */}

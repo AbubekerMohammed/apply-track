@@ -75,18 +75,23 @@ export function ContactsView({ initialContacts, userEmail }: ContactsViewProps) 
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-              Contacts & Referrals
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+            <span>Workspace</span>
+            <span>/</span>
+            <span className="text-slate-900 dark:text-slate-200">Contacts</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+              Contacts & Outreach
             </h1>
-            <span className="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900/40">
+            <span className="text-xs px-2.5 py-0.5 rounded-full font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 tabular-nums">
               {contacts.length} Contacts
             </span>
           </div>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            {userEmail ? `Scoped to ${userEmail} • ` : ""}
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            {userEmail ? `${userEmail} • ` : ""}
             Manage professional connections, log outreach notes, and schedule follow-up reminders
           </p>
         </div>
@@ -97,9 +102,9 @@ export function ContactsView({ initialContacts, userEmail }: ContactsViewProps) 
               setTargetContactForOutreach(null);
               setOutreachModalOpen(true);
             }}
-            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-xs"
+            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
           >
-            <Send className="w-4 h-4" />
+            <Send className="w-3.5 h-3.5" />
             <span>Log Outreach</span>
           </button>
           <button
@@ -107,7 +112,7 @@ export function ContactsView({ initialContacts, userEmail }: ContactsViewProps) 
               setEditingContact(null);
               setModalOpen(true);
             }}
-            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-white transition-colors shadow-xs"
+            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-medium rounded-lg bg-slate-900 text-white dark:bg-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors shadow-xs"
           >
             <Plus className="w-4 h-4" />
             <span>Add Contact</span>
@@ -146,8 +151,8 @@ export function ContactsView({ initialContacts, userEmail }: ContactsViewProps) 
       {/* Contacts Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {filteredContacts.length === 0 ? (
-          <div className="col-span-full py-12 text-center p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 mx-auto flex items-center justify-center">
+          <div className="col-span-full py-12 text-center p-8 rounded-xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-3">
+            <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 mx-auto flex items-center justify-center">
               <Users className="w-6 h-6" />
             </div>
             <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
@@ -161,7 +166,7 @@ export function ContactsView({ initialContacts, userEmail }: ContactsViewProps) 
                 setEditingContact(null);
                 setModalOpen(true);
               }}
-              className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold"
+              className="mt-2 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-slate-900 text-white dark:bg-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 text-xs font-medium shadow-xs"
             >
               <Plus className="w-4 h-4" />
               <span>Add First Contact</span>
@@ -175,7 +180,7 @@ export function ContactsView({ initialContacts, userEmail }: ContactsViewProps) 
             return (
               <div
                 key={contact.id}
-                className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-all flex flex-col justify-between"
+                className="p-5 rounded-xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-all flex flex-col justify-between"
               >
                 <div className="space-y-3">
                   {/* Contact Header */}

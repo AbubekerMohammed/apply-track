@@ -122,7 +122,7 @@ export function InboxConnections({
       {/* Inboxes Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Gmail Card */}
-        <div className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs flex flex-col justify-between space-y-4">
+        <div className="p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111622] shadow-xs flex flex-col justify-between space-y-4">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-950/50 text-red-600 flex items-center justify-center font-bold text-sm border border-red-200 dark:border-red-900/50">
@@ -173,7 +173,7 @@ export function InboxConnections({
         </div>
 
         {/* Outlook Card */}
-        <div className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs flex flex-col justify-between space-y-4">
+        <div className="p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111622] shadow-xs flex flex-col justify-between space-y-4">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 flex items-center justify-center font-bold text-sm border border-blue-200 dark:border-blue-900/50">

@@ -109,7 +109,7 @@ export function KanbanView({
             onDragOver={(e) => handleDragOver(e, stage)}
             onDragLeave={handleDragLeave}
             onDrop={(e) => handleDrop(e, stage)}
-            className={`w-72 shrink-0 flex flex-col rounded-2xl border transition-all duration-150 snap-start bg-slate-50/70 dark:bg-slate-900/40 ${
+            className={`w-72 shrink-0 flex flex-col rounded-xl border transition-all duration-150 snap-start bg-slate-50/70 dark:bg-slate-900/40 ${
               isHovered
                 ? "border-blue-500 ring-2 ring-blue-500/20 bg-blue-50/30 dark:bg-blue-950/20"
                 : "border-slate-200/80 dark:border-slate-800"

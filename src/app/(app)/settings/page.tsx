@@ -54,19 +54,24 @@ export default async function SettingsPage() {
 
   return (
     <div className="space-y-6 max-w-4xl">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-          Account Settings & Integrations
+      <div className="space-y-1 pb-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+          <span>Workspace</span>
+          <span>/</span>
+          <span className="text-slate-900 dark:text-slate-200">Settings</span>
+        </div>
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+          Settings & Integrations
         </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          Manage your email connections, classification review queue, and daily targets
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          Manage your connected inboxes, classification review queue, and daily targets
         </p>
       </div>
 
       {/* Gmail & Outlook Inbox Connections */}
-      <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
-        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-          <Mail className="w-4 h-4 text-blue-600" />
+      <div className="p-6 rounded-xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+          <Mail className="w-4 h-4 text-slate-500 dark:text-slate-400" />
           <span>Connected Inboxes (Gmail & Outlook)</span>
         </h2>
         <InboxConnections
@@ -82,21 +87,21 @@ export default async function SettingsPage() {
       />
 
       {/* Profile Card */}
-      <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
-        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-          <User className="w-4 h-4 text-blue-600" />
+      <div className="p-6 rounded-xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+          <User className="w-4 h-4 text-slate-500 dark:text-slate-400" />
           <span>Profile Information</span>
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800">
+          <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800">
             <span className="text-xs text-slate-400 block mb-0.5">Full Name</span>
-            <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+            <span className="text-sm font-semibold text-slate-900 dark:text-white">
               {user?.name || "Not provided"}
             </span>
           </div>
-          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800">
+          <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800">
             <span className="text-xs text-slate-400 block mb-0.5">Email Address</span>
-            <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+            <span className="text-sm font-semibold text-slate-900 dark:text-white">
               {user?.email}
             </span>
           </div>
@@ -104,9 +109,9 @@ export default async function SettingsPage() {
       </div>
 
       {/* Daily Goal Settings */}
-      <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
-        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-          <Settings className="w-4 h-4 text-blue-600" />
+      <div className="p-6 rounded-xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+          <Settings className="w-4 h-4 text-slate-500 dark:text-slate-400" />
           <span>Daily Goals Preference</span>
         </h2>
         <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -119,11 +124,11 @@ export default async function SettingsPage() {
             min="1"
             max="100"
             defaultValue={user?.dailyGoal || 10}
-            className="w-28 px-3 py-2 text-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-28 px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 tabular-nums"
           />
           <button
             type="submit"
-            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition-colors shadow-xs"
+            className="px-4 py-2 rounded-lg bg-slate-900 text-white dark:bg-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 font-medium text-xs transition-colors shadow-xs"
           >
             Save Goal
           </button>
@@ -134,12 +139,12 @@ export default async function SettingsPage() {
       <WeeklyDigestSettings />
 
       {/* Appearance & Dark Mode Card */}
-      <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
-        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-          <Moon className="w-4 h-4 text-blue-600" />
+      <div className="p-6 rounded-xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+          <Moon className="w-4 h-4 text-slate-500 dark:text-slate-400" />
           <span>Appearance & Dark Mode</span>
         </h2>
-        <div className="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800">
+        <div className="flex items-center justify-between p-4 rounded-lg bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800">
           <div>
             <span className="text-sm font-medium text-slate-900 dark:text-slate-100 block">
               Theme Mode
