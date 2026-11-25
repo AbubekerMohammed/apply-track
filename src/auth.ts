@@ -1,4 +1,5 @@
 import NextAuth from "next-auth";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
@@ -7,13 +8,14 @@ import { prisma } from "@/lib/prisma";
 import { isDemoMode } from "@/lib/demo-mode";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  adapter: PrismaAdapter(prisma),
   providers: [
     ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
       ? [
           Google({
             clientId: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            allowDangerousEmailAccountLinking: true,
+            authorization: { params: { scope: "openid email profile" } },
           }),
         ]
       : []),
@@ -124,6 +126,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: "/login",
   },
   callbacks: {
+    async signIn({ account, profile }) {
+      // Never auto-link Google to an existing email/password user; send them
+      // back to /login with a clear message instead.
+      if (account?.provider === "google" && profile?.email) {
+        const existing = await prisma.user.findUnique({
+          where: { email: profile.email.toLowerCase().trim() },
+          include: { accounts: { where: { provider: "google" } } },
+        });
+        if (existing?.password && existing.accounts.length === 0) {
+          return "/login?error=AccountExists";
+        }
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
