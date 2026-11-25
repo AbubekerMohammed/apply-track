@@ -25,7 +25,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { eventId, action, applicationId, company, role, stage } = await req.json();
+  const { eventId, action, applicationId, company, role, stage } = await req
+    .json()
+    .catch(() => ({}));
 
   if (!eventId) {
     return NextResponse.json({ error: "Event ID required" }, { status: 400 });
@@ -48,7 +50,18 @@ export async function POST(req: Request) {
   }
 
   if (action === "approve") {
-    let targetAppId = applicationId;
+    let targetAppId: string | null = null;
+
+    if (applicationId) {
+      const owned = await prisma.application.findFirst({
+        where: { id: String(applicationId), userId: session.user.id },
+        select: { id: true },
+      });
+      if (!owned) {
+        return NextResponse.json({ error: "Application not found" }, { status: 404 });
+      }
+      targetAppId = owned.id;
+    }
 
     // If creating a brand new application from this email
     if (!targetAppId && company) {

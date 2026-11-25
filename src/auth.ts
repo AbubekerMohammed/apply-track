@@ -1,124 +1,75 @@
 import NextAuth from "next-auth";
-import { PrismaAdapter } from "@auth/prisma-adapter";
+import type { Provider } from "next-auth/providers";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import { isDemoMode } from "@/lib/demo-mode";
+
+export const googleAuthEnabled = Boolean(
+  process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+);
+export const microsoftAuthEnabled = Boolean(
+  process.env.AZURE_AD_CLIENT_ID && process.env.AZURE_AD_CLIENT_SECRET
+);
+
+const providers: Provider[] = [];
+
+if (googleAuthEnabled) {
+  providers.push(
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      // Linking to an existing email/password user happens in the signIn
+      // callback below, which requires a verified Google email and revokes
+      // sessions on accounts whose email was never verified.
+    })
+  );
+}
+
+if (microsoftAuthEnabled) {
+  providers.push(
+    MicrosoftEntraID({
+      clientId: process.env.AZURE_AD_CLIENT_ID,
+      clientSecret: process.env.AZURE_AD_CLIENT_SECRET,
+      issuer: `https://login.microsoftonline.com/${process.env.AZURE_AD_TENANT_ID || "common"}/v2.0`,
+    })
+  );
+}
+
+providers.push(
+  Credentials({
+    id: "credentials",
+    name: "Email and Password",
+    credentials: {
+      email: { label: "Email", type: "email" },
+      password: { label: "Password", type: "password" },
+    },
+    async authorize(credentials) {
+      const email = String(credentials?.email ?? "").toLowerCase().trim();
+      const password = String(credentials?.password ?? "");
+      if (!email || !password) return null;
+
+      const user = await prisma.user.findUnique({ where: { email } });
+      if (!user?.password) return null;
+
+      const isValid = await bcrypt.compare(password, user.password);
+      if (!isValid) return null;
+
+      return {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        image: user.image,
+      };
+    },
+  })
+);
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
-  providers: [
-    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
-      ? [
-          Google({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            authorization: { params: { scope: "openid email profile" } },
-          }),
-        ]
-      : []),
-    ...(process.env.AZURE_AD_CLIENT_ID && process.env.AZURE_AD_CLIENT_SECRET
-      ? [
-          MicrosoftEntraID({
-            clientId: process.env.AZURE_AD_CLIENT_ID,
-            clientSecret: process.env.AZURE_AD_CLIENT_SECRET,
-            issuer: `https://login.microsoftonline.com/${process.env.AZURE_AD_TENANT_ID || "common"}/v2.0`,
-            allowDangerousEmailAccountLinking: true,
-          }),
-        ]
-      : []),
-    Credentials({
-      id: "credentials",
-      name: "Email and Password",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-        demoProvider: { label: "Demo Provider", type: "text" },
-      },
-      async authorize(credentials) {
-        // Demo logins are only allowed when ENABLE_DEMO_MODE is on
-        if (credentials?.demoProvider && !isDemoMode()) {
-          return null;
-        }
-
-        // Support 1-click test login for Google & Microsoft accounts
-        if (credentials?.demoProvider === "google") {
-          const testEmail = "test.google@applytrack.io";
-          let user = await prisma.user.findUnique({
-            where: { email: testEmail },
-          });
-          if (!user) {
-            user = await prisma.user.create({
-              data: {
-                name: "Google Test User",
-                email: testEmail,
-                gmailConnected: true,
-              },
-            });
-          }
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            image: user.image,
-          };
-        }
-
-        if (credentials?.demoProvider === "microsoft") {
-          const testEmail = "test.microsoft@applytrack.io";
-          let user = await prisma.user.findUnique({
-            where: { email: testEmail },
-          });
-          if (!user) {
-            user = await prisma.user.create({
-              data: {
-                name: "Microsoft Test User",
-                email: testEmail,
-                outlookConnected: true,
-              },
-            });
-          }
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            image: user.image,
-          };
-        }
-
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error("Please enter both email and password");
-        }
-
-        const email = String(credentials.email).toLowerCase().trim();
-        const user = await prisma.user.findUnique({
-          where: { email },
-        });
-
-        if (!user || !user.password) {
-          throw new Error("No account found with this email");
-        }
-
-        const isValid = await bcrypt.compare(
-          String(credentials.password),
-          user.password
-        );
-
-        if (!isValid) {
-          throw new Error("Invalid password");
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          image: user.image,
-        };
-      },
-    }),
-  ],
+  providers,
   session: {
     strategy: "jwt",
   },
@@ -174,12 +125,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             },
           }),
           // An unverified email means whoever set the password never proved
-          // ownership of it, so drop that password and mark the email verified.
+          // ownership of it. Drop that password, mark the email verified, and
+          // bump sessionVersion so every session issued before now is revoked.
           ...(existing.emailVerified === null
             ? [
                 prisma.user.update({
                   where: { id: existing.id },
-                  data: { password: null, emailVerified: new Date() },
+                  data: {
+                    password: null,
+                    emailVerified: new Date(),
+                    sessionVersion: { increment: 1 },
+                  },
                 }),
               ]
             : []),
@@ -192,6 +148,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
+      }
+
+      // Reject tokens issued before the user's sessionVersion was bumped.
+      // Returning null clears the session cookie.
+      const userId = (token.id as string | undefined) ?? token.sub;
+      if (!userId) return null;
+      const current = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { sessionVersion: true },
+      });
+      if (!current) return null;
+      if (user) {
+        token.sessionVersion = current.sessionVersion;
+      } else if ((token.sessionVersion ?? 0) !== current.sessionVersion) {
+        return null;
       }
       return token;
     },

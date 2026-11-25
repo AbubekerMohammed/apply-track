@@ -78,16 +78,31 @@
    NEXTAUTH_SECRET="your-random-secret"
    AUTH_TRUST_HOST="true"
 
-   # Optional: Google & Microsoft OAuth
+   # Optional: Google & Microsoft sign-in + Gmail/Outlook inbox sync.
+   # Buttons only appear when both the ID and secret are set.
    GOOGLE_CLIENT_ID=""
    GOOGLE_CLIENT_SECRET=""
    AZURE_AD_CLIENT_ID=""
    AZURE_AD_CLIENT_SECRET=""
    AZURE_AD_TENANT_ID="common"
 
-   # Optional: demo logins, test accounts & sample inbox sync ("true" to enable; off by default)
-   ENABLE_DEMO_MODE=
+   # Optional: weekly digest delivery via Resend
+   RESEND_API_KEY=""
+   EMAIL_FROM="ApplyTrack <digest@yourdomain.com>"
+
+   # Required in production for the daily inbox-sync cron (vercel.json)
+   CRON_SECRET=""
+   # Optional: canonical public URL used in OAuth redirects and emails
+   APP_URL=""
    ```
+
+   **OAuth redirect URIs** to register (replace the host for production):
+   - Google Cloud Console → OAuth client (Web):
+     - `http://localhost:3000/api/auth/callback/google` (sign-in)
+     - `http://localhost:3000/api/email/callback/gmail` (inbox connect; enable the Gmail API and add the `gmail.readonly` scope)
+   - Microsoft Entra ID → App registration → Web platform:
+     - `http://localhost:3000/api/auth/callback/microsoft-entra-id` (sign-in)
+     - `http://localhost:3000/api/email/callback/outlook` (inbox connect; delegated `Mail.Read`, `User.Read`, `offline_access`)
 
 3. **Push the Prisma schema and start the dev server:**
    ```bash
@@ -101,7 +116,7 @@
 
 ## Deployment (Vercel + Neon)
 
-1. Provision a PostgreSQL database (e.g., Neon via Vercel Storage) and set `DATABASE_URL`, `AUTH_SECRET`, `NEXTAUTH_SECRET`, and `AUTH_TRUST_HOST=true` in Vercel environment variables.
+1. Provision a PostgreSQL database (e.g., Neon via Vercel Storage) and set `DATABASE_URL`, `AUTH_SECRET`, `AUTH_TRUST_HOST=true`, and `CRON_SECRET` in Vercel environment variables, plus the optional OAuth / Resend variables above.
 2. Sync the schema to your production database:
    ```bash
    npx prisma db push
@@ -118,7 +133,7 @@
 Planned enhancements are tracked as [GitHub Issues](https://github.com/AbubekerMohammed/apply-track/issues):
 - Browser Extension for 1-click job capture from LinkedIn, Greenhouse, Lever & Workday
 - Resume & Cover Letter version tracking with A/B response rate analytics
-- Background Cron + Gmail Pub/Sub / MS Graph webhooks for real-time inbox sync
+- Gmail Pub/Sub / MS Graph webhooks for real-time inbox sync (a daily cron sync ships today)
 - Interview Prep Hub & round-by-round notes per application
 - Salary, Equity & Total Compensation offer comparison tool
 - Custom pipeline stages, tags & saved filter views

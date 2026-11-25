@@ -6,9 +6,9 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Briefcase, ArrowRight, Lock, Mail, User, AlertCircle } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { GoogleButton } from "@/components/google-button";
+import { OAuthButtons } from "@/components/auth/oauth-buttons";
 
-export default function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
+export function RegisterForm({ google, microsoft }: { google: boolean; microsoft: boolean }) {
   const router = useRouter();
 
   const [name, setName] = React.useState("");
@@ -27,8 +27,8 @@ export default function RegisterForm({ googleEnabled }: { googleEnabled: boolean
       return;
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters long");
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters long");
       return;
     }
 
@@ -41,7 +41,7 @@ export default function RegisterForm({ googleEnabled }: { googleEnabled: boolean
         body: JSON.stringify({ name, email, password }),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
         setError(data.error || "Failed to create account");
@@ -107,20 +107,13 @@ export default function RegisterForm({ googleEnabled }: { googleEnabled: boolean
             </div>
           )}
 
-          {googleEnabled && (
-            <>
-              <GoogleButton
-                disabled={loading}
-                onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-              />
-              <div className="relative flex items-center justify-center">
-                <div className="border-t border-slate-200 dark:border-slate-800 w-full" />
-                <span className="bg-white dark:bg-[#111622] px-3 text-[11px] uppercase tracking-wider text-slate-400 font-medium absolute">
-                  Or sign up with email
-                </span>
-              </div>
-            </>
-          )}
+          <OAuthButtons
+            google={google}
+            microsoft={microsoft}
+            callbackUrl="/dashboard"
+            disabled={loading}
+            dividerLabel="Or sign up with email"
+          />
 
           <form onSubmit={handleRegister} className="space-y-4">
             <div>
@@ -170,14 +163,15 @@ export default function RegisterForm({ googleEnabled }: { googleEnabled: boolean
                 htmlFor="password"
                 className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1"
               >
-                Password (min 6 characters)
+                Password (min 8 characters)
               </label>
               <div className="relative">
                 <input
                   id="password"
                   type="password"
+                  autoComplete="new-password"
                   required
-                  minLength={6}
+                  minLength={8}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
@@ -199,7 +193,7 @@ export default function RegisterForm({ googleEnabled }: { googleEnabled: boolean
                   id="confirmPassword"
                   type="password"
                   required
-                  minLength={6}
+                  minLength={8}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"

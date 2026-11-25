@@ -14,11 +14,19 @@ export async function POST(req: Request) {
       );
     }
 
-    const cleanEmail = String(email).toLowerCase().trim();
+    if (typeof email !== "string" || typeof password !== "string") {
+      return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    }
 
-    if (password.length < 6) {
+    const cleanEmail = email.toLowerCase().trim();
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail) || cleanEmail.length > 254) {
+      return NextResponse.json({ error: "Please enter a valid email address" }, { status: 400 });
+    }
+
+    if (password.length < 8 || password.length > 200) {
       return NextResponse.json(
-        { error: "Password must be at least 6 characters" },
+        { error: "Password must be at least 8 characters" },
         { status: 400 }
       );
     }
@@ -34,11 +42,11 @@ export async function POST(req: Request) {
       );
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     const user = await prisma.user.create({
       data: {
-        name: name?.trim() || cleanEmail.split("@")[0],
+        name: (typeof name === "string" && name.trim().slice(0, 100)) || cleanEmail.split("@")[0],
         email: cleanEmail,
         password: hashedPassword,
       },

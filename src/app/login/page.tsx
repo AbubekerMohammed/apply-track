@@ -1,18 +1,22 @@
-import { connection } from "next/server";
-import { isDemoMode } from "@/lib/demo-mode";
-import LoginForm from "./login-form";
+import { googleAuthEnabled, microsoftAuthEnabled } from "@/auth";
+import { safeCallbackUrl } from "@/lib/safe-redirect";
+import { LoginForm } from "./login-form";
 
-export default async function LoginPage() {
-  // Read env at request time rather than freezing it at build.
-  await connection();
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const params = await searchParams;
+  const error = Array.isArray(params.error) ? params.error[0] : params.error;
 
   return (
     <LoginForm
-      demoMode={isDemoMode()}
-      googleEnabled={!!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET)}
-      microsoftEnabled={
-        !!(process.env.AZURE_AD_CLIENT_ID && process.env.AZURE_AD_CLIENT_SECRET)
-      }
+      google={googleAuthEnabled}
+      microsoft={microsoftAuthEnabled}
+      callbackUrl={safeCallbackUrl(params.callbackUrl)}
+      initialError={error}
+      registered={params.registered === "true"}
     />
   );
 }

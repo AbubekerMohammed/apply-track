@@ -1,13 +1,9 @@
 import { connection } from "next/server";
-import RegisterForm from "./register-form";
+import { googleAuthEnabled, microsoftAuthEnabled } from "@/auth";
+import { RegisterForm } from "./register-form";
 
 export default async function RegisterPage() {
-  // Read env at request time rather than freezing it at build.
+  // Render per request so newly configured sign-in providers show up without a rebuild.
   await connection();
-
-  return (
-    <RegisterForm
-      googleEnabled={!!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET)}
-    />
-  );
+  return <RegisterForm google={googleAuthEnabled} microsoft={microsoftAuthEnabled} />;
 }
