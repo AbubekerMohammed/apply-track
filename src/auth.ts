@@ -149,6 +149,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.email = user.email;
         token.name = user.name;
       }
+      // Microsoft sign-in sets the profile photo as a base64 data URL, which
+      // pushes the session cookie past 4 KB and splits it into chunks. Nothing
+      // reads the picture from the session, so keep it out of the cookie.
+      delete token.picture;
 
       // Reject tokens issued before the user's sessionVersion was bumped.
       // Returning null clears the session cookie.
