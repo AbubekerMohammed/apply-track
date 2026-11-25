@@ -92,8 +92,8 @@ async function register(email: string, password: string) {
 async function run() {
   console.log("=== EMAIL VERIFICATION & PASSWORD RESET ===\n");
   const stamp = Date.now();
-  const alice = `verify.alice.${stamp}@applytrack.test`;
-  const bob = `verify.bob.${stamp}@applytrack.test`;
+  const alice = `verify.alice.${stamp}@example.test`;
+  const bob = `verify.bob.${stamp}@example.test`;
   const password = "Password123!";
   const newPassword = "NewPassword456!";
 
@@ -203,7 +203,7 @@ async function run() {
     assert(!!(await login(alice, newPassword)).session, "Reset: new password works");
 
     // --- Endpoints that must not reveal which emails exist ---
-    const unknown = `nobody.${stamp}@applytrack.test`;
+    const unknown = `nobody.${stamp}@example.test`;
     const resendUnknown = await postJson("/api/auth/resend-verification", { email: unknown });
     const resendKnown = await postJson("/api/auth/resend-verification", { email: alice });
     assert(

@@ -1,5 +1,5 @@
 /**
- * Shared Email Provider Interface for ApplyTrack (Gmail & Outlook)
+ * Shared Email Provider Interface for Traill (Gmail & Outlook)
  */
 
 export interface NormalizedEmailMessage {

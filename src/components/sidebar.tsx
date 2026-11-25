@@ -73,7 +73,7 @@ export function Sidebar({ user }: { user?: { name?: string | null; email?: strin
           </div>
           <div className="flex flex-col">
             <span className="font-semibold text-lg tracking-tight text-slate-900 dark:text-white">
-              ApplyTrack
+              Traill
             </span>
             <span className="text-xs text-slate-500 dark:text-slate-400">
               Job Application Tracker
@@ -171,7 +171,7 @@ export function Sidebar({ user }: { user?: { name?: string | null; email?: strin
             <Briefcase className="w-3.5 h-3.5" />
           </div>
           <span className="font-bold text-slate-900 dark:text-white text-sm">
-            ApplyTrack
+            Traill
           </span>
         </div>
         <div className="flex items-center gap-2">

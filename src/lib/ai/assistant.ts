@@ -241,7 +241,7 @@ export async function processAICareerQuery(userId: string, question: string): Pr
     }),
   ]);
 
-  const answer = `Here is your current **ApplyTrack Career Summary**:\n\n• **${totalApps}** total applications in your pipeline\n• **${pendingFollowUpsCount}** outreach follow-ups requiring your attention\n• **${targetNeedsRefCount}** target companies waiting for referrals\n\nYou can ask me specific questions anytime, such as:\n- *"How many did I apply to last week?"*\n- *"Who should I follow up with?"*\n- *"Which target companies still need a referral?"*\n- *"What is my response rate?"*`;
+  const answer = `Here is your current **Traill Career Summary**:\n\n• **${totalApps}** total applications in your pipeline\n• **${pendingFollowUpsCount}** outreach follow-ups requiring your attention\n• **${targetNeedsRefCount}** target companies waiting for referrals\n\nYou can ask me specific questions anytime, such as:\n- *"How many did I apply to last week?"*\n- *"Who should I follow up with?"*\n- *"Which target companies still need a referral?"*\n- *"What is my response rate?"*`;
 
   return {
     answer,

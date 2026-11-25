@@ -1,7 +1,7 @@
 import { prisma } from "../src/lib/prisma";
 
 async function runPhase6Tests() {
-  console.log("=== APPLYTRACK PHASE 6 VERIFICATION SUITE ===");
+  console.log("=== TRAILL PHASE 6 VERIFICATION SUITE ===");
   let passed = 0;
   let total = 0;
 

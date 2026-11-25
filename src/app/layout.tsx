@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ApplyTrack — Smart Job Application Tracker",
+  title: "Traill — Smart Job Application Tracker",
   description:
     "Multi-user job application tracker with email sync, pipeline stages, referrals, and daily goals.",
 };

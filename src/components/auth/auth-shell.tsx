@@ -16,7 +16,7 @@ export function AuthShell({ title, children }: { title: string; children: React.
             <Briefcase className="w-4 h-4" />
           </div>
           <span className="font-bold text-xl tracking-tight text-slate-900 dark:text-white">
-            ApplyTrack
+            Traill
           </span>
         </Link>
         <h1 className="text-center text-2xl font-bold tracking-tight text-slate-900 dark:text-white">

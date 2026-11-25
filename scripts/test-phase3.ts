@@ -12,7 +12,7 @@ const BASE_URL = "http://localhost:3000";
 
 async function runPhase3Tests() {
   console.log("==================================================");
-  console.log("   APPLYTRACK PHASE 3 VERIFICATION & TEST SUITE   ");
+  console.log("   TRAILL PHASE 3 VERIFICATION & TEST SUITE   ");
   console.log("==================================================\n");
 
   let passed = 0;
@@ -30,7 +30,7 @@ async function runPhase3Tests() {
 
   try {
     // 1. Create a dedicated test user for Phase 3 with dailyGoal = 5
-    const testEmail = `phase3.${Date.now()}@applytrack.test`;
+    const testEmail = `phase3.${Date.now()}@example.test`;
     await fetch(`${BASE_URL}/api/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

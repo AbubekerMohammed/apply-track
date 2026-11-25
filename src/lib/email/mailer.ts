@@ -1,6 +1,6 @@
 /**
  * Transactional email delivery via Resend's HTTP API.
- * Requires RESEND_API_KEY and EMAIL_FROM (e.g. "ApplyTrack <digest@yourdomain.com>").
+ * Requires RESEND_API_KEY and EMAIL_FROM (e.g. "Traill <digest@yourdomain.com>").
  */
 export function isMailerConfigured(): boolean {
   return Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM);

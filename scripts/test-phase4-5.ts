@@ -12,7 +12,7 @@ const BASE_URL = "http://localhost:3000";
 
 async function runPhase4And5Tests() {
   console.log("==================================================");
-  console.log("   APPLYTRACK PHASES 4 & 5 TEST & VERIFICATION    ");
+  console.log("   TRAILL PHASES 4 & 5 TEST & VERIFICATION    ");
   console.log("==================================================\n");
 
   let passed = 0;
@@ -30,7 +30,7 @@ async function runPhase4And5Tests() {
 
   try {
     // 1. Create a test user for Email tests
-    const testEmail = `emailtest.${Date.now()}@applytrack.test`;
+    const testEmail = `emailtest.${Date.now()}@example.test`;
     await fetch(`${BASE_URL}/api/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
