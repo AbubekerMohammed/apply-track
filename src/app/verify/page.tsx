@@ -34,20 +34,34 @@ async function verify(token: string, email: string): Promise<Result> {
   const user = await prisma.user.findUnique({ where: { email }, select: { id: true } });
   if (!user) return "invalid";
 
-  await prisma.$transaction([
-    prisma.user.update({ where: { id: user.id }, data: { emailVerified: now } }),
-    // Keep the used token (until its original expiry) so reopening the link
-    // shows "already verified" rather than "invalid".
-    prisma.verificationToken.update({
-      where: { token: record.token },
+  return prisma.$transaction(async (tx): Promise<Result> => {
+    // Claim the token by marking it used, but only if it is still this email's
+    // live token. A concurrent resend (which replaces it) or another open of
+    // the same link may have changed it since the read above; then nothing is
+    // claimed and the email is not verified by this request. The used token is
+    // kept (until its original expiry) so reopening the link shows "already
+    // verified" rather than "invalid".
+    const claimed = await tx.verificationToken.updateMany({
+      where: { token: record.token, identifier: email, expires: { gt: now } },
       data: { identifier: USED_VERIFY_IDENTIFIER_PREFIX + email },
-    }),
+    });
+    if (claimed.count !== 1) {
+      const current = await tx.verificationToken.findUnique({
+        where: { token: record.token },
+        select: { identifier: true },
+      });
+      return current?.identifier === USED_VERIFY_IDENTIFIER_PREFIX + email
+        ? "already-verified"
+        : "invalid";
+    }
+
+    await tx.user.update({ where: { id: user.id }, data: { emailVerified: now } });
     // Housekeeping: drop used tokens that have passed their expiry.
-    prisma.verificationToken.deleteMany({
+    await tx.verificationToken.deleteMany({
       where: { identifier: { startsWith: USED_VERIFY_IDENTIFIER_PREFIX }, expires: { lte: now } },
-    }),
-  ]);
-  return "verified";
+    });
+    return "verified";
+  });
 }
 
 export default async function VerifyPage({
