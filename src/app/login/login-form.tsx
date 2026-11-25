@@ -24,6 +24,8 @@ interface LoginFormProps {
   callbackUrl: string;
   initialError?: string;
   registered?: boolean;
+  /** False when account emails can't be sent; hides resend and password recovery. */
+  emailAvailable: boolean;
 }
 
 export function LoginForm({
@@ -32,6 +34,7 @@ export function LoginForm({
   callbackUrl,
   initialError,
   registered,
+  emailAvailable,
 }: LoginFormProps) {
   const router = useRouter();
   const [email, setEmail] = React.useState("");
@@ -122,7 +125,14 @@ export function LoginForm({
             </div>
           )}
 
-          {unverifiedEmail && <ResendVerificationButton email={unverifiedEmail} />}
+          {unverifiedEmail &&
+            (emailAvailable ? (
+              <ResendVerificationButton email={unverifiedEmail} />
+            ) : (
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                We can&apos;t send verification emails right now. Please continue with Google.
+              </p>
+            ))}
 
           <OAuthButtons
             google={google}
@@ -163,12 +173,14 @@ export function LoginForm({
                 >
                   Password
                 </label>
-                <Link
-                  href="/forgot-password"
-                  className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline"
-                >
-                  Forgot password?
-                </Link>
+                {emailAvailable && (
+                  <Link
+                    href="/forgot-password"
+                    className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    Forgot password?
+                  </Link>
+                )}
               </div>
               <div className="relative">
                 <input

@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { EMAIL_SIGNUP_UNAVAILABLE_MESSAGE } from "@/lib/auth-messages";
-import { appOrigin, isEmailSignupAvailable, sendVerificationEmail } from "@/lib/auth-tokens";
+import { appOrigin, isEmailDeliveryAvailable, sendVerificationEmail } from "@/lib/auth-tokens";
 
 export async function POST(req: Request) {
-  if (!isEmailSignupAvailable()) {
+  if (!isEmailDeliveryAvailable()) {
     return NextResponse.json({ error: EMAIL_SIGNUP_UNAVAILABLE_MESSAGE }, { status: 503 });
   }
 

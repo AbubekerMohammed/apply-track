@@ -2,11 +2,22 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { RESET_IDENTIFIER_PREFIX, hashToken, normalizeEmail } from "@/lib/auth-tokens";
+import { clientIp, createRateLimiter } from "@/lib/rate-limit";
 
 const INVALID_LINK =
   "This reset link is invalid or has expired. Please request a new one.";
 
+// A real user needs one or two tries; this only slows down guessing or abuse.
+const limiter = createRateLimiter({ limit: 10, windowMs: 15 * 60 * 1000 });
+
 export async function POST(req: Request) {
+  if (!limiter.check(clientIp(req))) {
+    return NextResponse.json(
+      { error: "Too many attempts. Please wait a few minutes and try again." },
+      { status: 429 }
+    );
+  }
+
   const body = await req.json().catch(() => ({}));
   const email = normalizeEmail(body?.email);
   const token = typeof body?.token === "string" ? body.token : "";
@@ -23,13 +34,25 @@ export async function POST(req: Request) {
   }
 
   const identifier = RESET_IDENTIFIER_PREFIX + email;
+  const tokenHash = hashToken(token);
+
+  // Cheap check first so made-up links never reach the expensive bcrypt hash.
+  // The token is still consumed atomically below; this only filters.
+  const candidate = await prisma.verificationToken.findFirst({
+    where: { identifier, token: tokenHash, expires: { gt: new Date() } },
+    select: { token: true },
+  });
+  if (!candidate) {
+    return NextResponse.json({ error: INVALID_LINK }, { status: 400 });
+  }
+
   const hashedPassword = await bcrypt.hash(password, 12);
 
   try {
     const ok = await prisma.$transaction(async (tx) => {
       // Consuming the token is the check: only one request can delete it.
       const consumed = await tx.verificationToken.deleteMany({
-        where: { identifier, token: hashToken(token), expires: { gt: new Date() } },
+        where: { identifier, token: tokenHash, expires: { gt: new Date() } },
       });
       if (consumed.count !== 1) return false;
 

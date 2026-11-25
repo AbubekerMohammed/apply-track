@@ -1,6 +1,12 @@
 import { NextResponse, after } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { appOrigin, normalizeEmail, sendPasswordResetEmail } from "@/lib/auth-tokens";
+import { EMAIL_UNAVAILABLE_MESSAGE } from "@/lib/auth-messages";
+import {
+  appOrigin,
+  isEmailDeliveryAvailable,
+  normalizeEmail,
+  sendPasswordResetEmail,
+} from "@/lib/auth-tokens";
 
 /**
  * Email a password reset link if an account exists. Always answers the same
@@ -8,6 +14,11 @@ import { appOrigin, normalizeEmail, sendPasswordResetEmail } from "@/lib/auth-to
  * whether the account exists.
  */
 export async function POST(req: Request) {
+  // Depends only on server config, so it reveals nothing about accounts.
+  if (!isEmailDeliveryAvailable()) {
+    return NextResponse.json({ error: EMAIL_UNAVAILABLE_MESSAGE }, { status: 503 });
+  }
+
   const body = await req.json().catch(() => ({}));
   const email = normalizeEmail(body?.email);
 

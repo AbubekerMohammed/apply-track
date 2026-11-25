@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { hashToken, normalizeEmail } from "@/lib/auth-tokens";
+import {
+  USED_VERIFY_IDENTIFIER_PREFIX,
+  hashToken,
+  isEmailDeliveryAvailable,
+  normalizeEmail,
+} from "@/lib/auth-tokens";
 import { AuthNotice, AuthShell, authLinkClass } from "@/components/auth/auth-shell";
 import { ResendVerificationButton } from "@/components/auth/resend-verification-button";
 
@@ -12,18 +17,16 @@ async function verify(token: string, email: string): Promise<Result> {
   const record = await prisma.verificationToken.findUnique({
     where: { token: hashToken(token) },
   });
-  if (!record) {
-    // The token was already used (or never existed). If the account is
-    // verified, the user most likely just clicked the link twice.
-    const user = await prisma.user.findUnique({
-      where: { email },
-      select: { emailVerified: true },
-    });
-    return user?.emailVerified ? "already-verified" : "invalid";
-  }
+  if (!record) return "invalid";
+
+  // This exact link was already used for this email (e.g. clicked twice, or
+  // opened first by a mail scanner). Answering from the token itself, never
+  // from the account, means a made-up token reveals nothing about the email.
+  if (record.identifier === USED_VERIFY_IDENTIFIER_PREFIX + email) return "already-verified";
   if (record.identifier !== email) return "invalid";
 
-  if (record.expires <= new Date()) {
+  const now = new Date();
+  if (record.expires <= now) {
     await prisma.verificationToken.deleteMany({ where: { token: record.token } });
     return "expired";
   }
@@ -32,8 +35,17 @@ async function verify(token: string, email: string): Promise<Result> {
   if (!user) return "invalid";
 
   await prisma.$transaction([
-    prisma.user.update({ where: { id: user.id }, data: { emailVerified: new Date() } }),
-    prisma.verificationToken.deleteMany({ where: { token: record.token } }),
+    prisma.user.update({ where: { id: user.id }, data: { emailVerified: now } }),
+    // Keep the used token (until its original expiry) so reopening the link
+    // shows "already verified" rather than "invalid".
+    prisma.verificationToken.update({
+      where: { token: record.token },
+      data: { identifier: USED_VERIFY_IDENTIFIER_PREFIX + email },
+    }),
+    // Housekeeping: drop used tokens that have passed their expiry.
+    prisma.verificationToken.deleteMany({
+      where: { identifier: { startsWith: USED_VERIFY_IDENTIFIER_PREFIX }, expires: { lte: now } },
+    }),
   ]);
   return "verified";
 }
@@ -72,7 +84,7 @@ export default async function VerifyPage({
           ? "This verification link has expired. Verification links are valid for 24 hours."
           : "This verification link is invalid or has already been used."}
       </AuthNotice>
-      {email && <ResendVerificationButton email={email} />}
+      {email && isEmailDeliveryAvailable() && <ResendVerificationButton email={email} />}
       <Link href="/login" className={authLinkClass}>
         Back to sign in
       </Link>

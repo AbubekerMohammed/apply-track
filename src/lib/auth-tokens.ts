@@ -9,6 +9,13 @@ const RESEND_COOLDOWN_MS = 60 * 1000;
 /** Password-reset tokens share the VerificationToken table; this prefix keeps them apart. */
 export const RESET_IDENTIFIER_PREFIX = "password-reset:";
 
+/**
+ * A used verification token is kept under this prefix until it would have
+ * expired, so reopening the same link can say "already verified" without
+ * revealing anything to someone who only knows the email address.
+ */
+export const USED_VERIFY_IDENTIFIER_PREFIX = "email-verified:";
+
 const isDevelopment = process.env.NODE_ENV === "development";
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -17,10 +24,12 @@ function configuredAppUrl(): string | undefined {
 }
 
 /**
- * Email sign-up needs a working mailer (except in development, where links go
- * to the console) and, in production, APP_URL for building the links.
+ * Whether we can deliver account emails (verification, password reset): needs
+ * a working mailer (except in development, where links go to the console) and,
+ * in production, APP_URL for building the links. Email sign-up, resend and
+ * password recovery are all hidden or rejected when this is false.
  */
-export function isEmailSignupAvailable(): boolean {
+export function isEmailDeliveryAvailable(): boolean {
   if (isProduction && !configuredAppUrl()) return false;
   return isMailerConfigured() || isDevelopment;
 }
@@ -79,21 +88,27 @@ async function deliver(opts: { to: string; subject: string; intro: string; cta: 
  * Only the SHA-256 hash is stored.
  */
 async function rotateToken(identifier: string, ttlMs: number): Promise<string | null> {
-  const now = Date.now();
-  const recent = await prisma.verificationToken.findFirst({
-    // A token's issue time is its expiry minus the TTL.
-    where: { identifier, expires: { gt: new Date(now + ttlMs - RESEND_COOLDOWN_MS) } },
-  });
-  if (recent) return null;
-
   const token = randomBytes(32).toString("hex");
-  await prisma.$transaction([
-    prisma.verificationToken.deleteMany({ where: { identifier } }),
-    prisma.verificationToken.create({
+  const issued = await prisma.$transaction(async (tx) => {
+    // Serialize issuers for this identifier until the transaction ends, so two
+    // concurrent requests can't both pass the cooldown check, and one can't
+    // delete the token the other is about to email.
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${identifier}))`;
+
+    const now = Date.now();
+    const recent = await tx.verificationToken.findFirst({
+      // A token's issue time is its expiry minus the TTL.
+      where: { identifier, expires: { gt: new Date(now + ttlMs - RESEND_COOLDOWN_MS) } },
+    });
+    if (recent) return false;
+
+    await tx.verificationToken.deleteMany({ where: { identifier } });
+    await tx.verificationToken.create({
       data: { identifier, token: hashToken(token), expires: new Date(now + ttlMs) },
-    }),
-  ]);
-  return token;
+    });
+    return true;
+  });
+  return issued ? token : null;
 }
 
 /** Issue a verification token for `email` and email the link. Returns false if rate-limited. */

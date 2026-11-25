@@ -1,6 +1,12 @@
 import { NextResponse, after } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { appOrigin, normalizeEmail, sendVerificationEmail } from "@/lib/auth-tokens";
+import { EMAIL_UNAVAILABLE_MESSAGE } from "@/lib/auth-messages";
+import {
+  appOrigin,
+  isEmailDeliveryAvailable,
+  normalizeEmail,
+  sendVerificationEmail,
+} from "@/lib/auth-tokens";
 
 /**
  * Re-send the verification link for an unverified email/password account.
@@ -8,6 +14,11 @@ import { appOrigin, normalizeEmail, sendVerificationEmail } from "@/lib/auth-tok
  * have accounts; the lookup and send run after the response is sent.
  */
 export async function POST(req: Request) {
+  // Depends only on server config, so it reveals nothing about accounts.
+  if (!isEmailDeliveryAvailable()) {
+    return NextResponse.json({ error: EMAIL_UNAVAILABLE_MESSAGE }, { status: 503 });
+  }
+
   const body = await req.json().catch(() => ({}));
   const email = normalizeEmail(body?.email);
 

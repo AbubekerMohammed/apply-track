@@ -1,7 +1,7 @@
 import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { auth, googleAuthEnabled, microsoftAuthEnabled } from "@/auth";
-import { isEmailSignupAvailable } from "@/lib/auth-tokens";
+import { isEmailDeliveryAvailable } from "@/lib/auth-tokens";
 import { RegisterForm } from "./register-form";
 
 export default async function RegisterPage() {
@@ -12,7 +12,7 @@ export default async function RegisterPage() {
     <RegisterForm
       google={googleAuthEnabled}
       microsoft={microsoftAuthEnabled}
-      emailSignupAvailable={isEmailSignupAvailable()}
+      emailSignupAvailable={isEmailDeliveryAvailable()}
     />
   );
 }
