@@ -4,6 +4,7 @@ import {
   USED_VERIFY_IDENTIFIER_PREFIX,
   hashToken,
   isEmailDeliveryAvailable,
+  lockAccount,
   normalizeEmail,
 } from "@/lib/auth-tokens";
 import { AuthNotice, AuthShell, authLinkClass } from "@/components/auth/auth-shell";
@@ -34,7 +35,11 @@ async function verify(token: string, email: string): Promise<Result> {
   const user = await prisma.user.findUnique({ where: { email }, select: { id: true } });
   if (!user) return "invalid";
 
-  return prisma.$transaction(async (tx): Promise<Result> => {
+  const result = await prisma.$transaction(async (tx): Promise<Result> => {
+    // Same lock order as password reset (account lock first, then rows), so
+    // the two can't deadlock on this user's token and user rows.
+    await lockAccount(tx, email);
+
     // Claim the token by marking it used, but only if it is still this email's
     // live token. A concurrent resend (which replaces it) or another open of
     // the same link may have changed it since the read above; then nothing is
@@ -56,12 +61,20 @@ async function verify(token: string, email: string): Promise<Result> {
     }
 
     await tx.user.update({ where: { id: user.id }, data: { emailVerified: now } });
-    // Housekeeping: drop used tokens that have passed their expiry.
-    await tx.verificationToken.deleteMany({
-      where: { identifier: { startsWith: USED_VERIFY_IDENTIFIER_PREFIX }, expires: { lte: now } },
-    });
     return "verified";
   });
+
+  if (result === "verified") {
+    // Housekeeping: drop used tokens that have passed their expiry. Kept out of
+    // the transaction above because it touches other accounts' rows; failing
+    // here is harmless.
+    await prisma.verificationToken
+      .deleteMany({
+        where: { identifier: { startsWith: USED_VERIFY_IDENTIFIER_PREFIX }, expires: { lte: now } },
+      })
+      .catch((error) => console.error("Used-token cleanup failed:", error));
+  }
+  return result;
 }
 
 export default async function VerifyPage({

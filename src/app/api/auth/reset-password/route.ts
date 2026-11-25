@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import { RESET_IDENTIFIER_PREFIX, hashToken, normalizeEmail } from "@/lib/auth-tokens";
+import {
+  RESET_IDENTIFIER_PREFIX,
+  hashToken,
+  lockAccount,
+  normalizeEmail,
+} from "@/lib/auth-tokens";
 import { clientIp, createRateLimiter } from "@/lib/rate-limit";
 
 const INVALID_LINK =
@@ -50,6 +55,10 @@ export async function POST(req: Request) {
 
   try {
     const ok = await prisma.$transaction(async (tx) => {
+      // Same lock order as /verify (account lock first, then rows), so the two
+      // can't deadlock on this user's token and user rows.
+      await lockAccount(tx, email);
+
       // Consuming the token is the check: only one request can delete it.
       const consumed = await tx.verificationToken.deleteMany({
         where: { identifier, token: tokenHash, expires: { gt: new Date() } },

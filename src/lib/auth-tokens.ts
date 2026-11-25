@@ -1,4 +1,5 @@
 import { createHash, randomBytes } from "crypto";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { isMailerConfigured, sendEmail } from "@/lib/email/mailer";
 
@@ -15,6 +16,16 @@ export const RESET_IDENTIFIER_PREFIX = "password-reset:";
  * revealing anything to someone who only knows the email address.
  */
 export const USED_VERIFY_IDENTIFIER_PREFIX = "email-verified:";
+
+/**
+ * Take a per-account lock for the rest of the transaction. Every transaction
+ * that writes both a user row and that user's tokens (verify, reset) must
+ * call this first: it fixes a single lock order, so they queue behind each
+ * other instead of locking rows in opposite orders and deadlocking.
+ */
+export async function lockAccount(tx: Prisma.TransactionClient, email: string) {
+  await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${"account:" + email}))`;
+}
 
 const isDevelopment = process.env.NODE_ENV === "development";
 const isProduction = process.env.NODE_ENV === "production";
