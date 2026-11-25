@@ -44,7 +44,8 @@ async function runPhase3Tests() {
     const user = await prisma.user.findUniqueOrThrow({ where: { email: testEmail } });
     await prisma.user.update({
       where: { id: user.id },
-      data: { dailyGoal: 5 },
+      // Mark the email verified so the credentials sign-in below is allowed.
+      data: { dailyGoal: 5, emailVerified: new Date() },
     });
 
     // Obtain session cookie

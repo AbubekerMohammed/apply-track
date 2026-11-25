@@ -41,7 +41,11 @@ async function runPhase4And5Tests() {
       }),
     });
 
-    const user = await prisma.user.findUniqueOrThrow({ where: { email: testEmail } });
+    // Mark the email verified so the credentials sign-in below is allowed.
+    const user = await prisma.user.update({
+      where: { email: testEmail },
+      data: { emailVerified: new Date() },
+    });
 
     // Session login
     const csrfRes = await fetch(`${BASE_URL}/api/auth/csrf`);

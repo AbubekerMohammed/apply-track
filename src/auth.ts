@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import type { Provider } from "next-auth/providers";
+import { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
@@ -13,6 +14,11 @@ export const googleAuthEnabled = Boolean(
 export const microsoftAuthEnabled = Boolean(
   process.env.AZURE_AD_CLIENT_ID && process.env.AZURE_AD_CLIENT_SECRET
 );
+
+/** Its `code` reaches the client on the signIn() result; login-form.tsx matches on it. */
+class EmailNotVerified extends CredentialsSignin {
+  code = "email_not_verified";
+}
 
 const providers: Provider[] = [];
 
@@ -56,6 +62,9 @@ providers.push(
 
       const isValid = await bcrypt.compare(password, user.password);
       if (!isValid) return null;
+
+      // Checked after the password so it reveals nothing to someone without it.
+      if (user.emailVerified === null) throw new EmailNotVerified();
 
       return {
         id: user.id,

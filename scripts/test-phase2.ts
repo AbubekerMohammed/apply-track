@@ -43,7 +43,11 @@ async function runPhase2Tests() {
     const regData = await regRes.json();
     assert(regRes.status === 201 && regData.success, "Setup: Test user registered successfully");
 
-    const user = await prisma.user.findUniqueOrThrow({ where: { email: testEmail } });
+    // Mark the email verified so the credentials sign-in below is allowed.
+    const user = await prisma.user.update({
+      where: { email: testEmail },
+      data: { emailVerified: new Date() },
+    });
 
     // Obtain session cookie by signing in
     const csrfRes = await fetch(`${BASE_URL}/api/auth/csrf`);
