@@ -10,9 +10,18 @@ const RESEND_COOLDOWN_MS = 60 * 1000;
 export const RESET_IDENTIFIER_PREFIX = "password-reset:";
 
 const isDevelopment = process.env.NODE_ENV === "development";
+const isProduction = process.env.NODE_ENV === "production";
 
-/** Email sign-up needs a working mailer, except in development where links go to the console. */
+function configuredAppUrl(): string | undefined {
+  return process.env.APP_URL?.trim() || undefined;
+}
+
+/**
+ * Email sign-up needs a working mailer (except in development, where links go
+ * to the console) and, in production, APP_URL for building the links.
+ */
 export function isEmailSignupAvailable(): boolean {
+  if (isProduction && !configuredAppUrl()) return false;
   return isMailerConfigured() || isDevelopment;
 }
 
@@ -24,9 +33,16 @@ export function hashToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
 }
 
-/** Base URL for links in emails: APP_URL if set, else the origin of the incoming request. */
+/**
+ * Base URL for links in emails. Production requires APP_URL so links can't be
+ * pointed elsewhere by a spoofed Host header; outside production the request
+ * origin is used when APP_URL is unset.
+ */
 export function appOrigin(req: Request): string {
-  const configured = process.env.APP_URL?.trim();
+  const configured = configuredAppUrl();
+  if (!configured && isProduction) {
+    throw new Error("APP_URL must be set in production to build email links");
+  }
   return (configured || new URL(req.url).origin).replace(/\/+$/, "");
 }
 

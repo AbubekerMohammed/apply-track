@@ -10,11 +10,12 @@ import { appOrigin, normalizeEmail, sendPasswordResetEmail } from "@/lib/auth-to
 export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}));
   const email = normalizeEmail(body?.email);
-  const origin = appOrigin(req);
 
   if (email && email.length <= 254) {
     after(async () => {
       try {
+        // Throws in production without APP_URL; caught so the reply never changes.
+        const origin = appOrigin(req);
         const user = await prisma.user.findUnique({ where: { email }, select: { id: true } });
         if (user) await sendPasswordResetEmail(email, origin);
       } catch (error) {

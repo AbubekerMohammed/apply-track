@@ -4,7 +4,7 @@ import { hashToken, normalizeEmail } from "@/lib/auth-tokens";
 import { AuthNotice, AuthShell, authLinkClass } from "@/components/auth/auth-shell";
 import { ResendVerificationButton } from "@/components/auth/resend-verification-button";
 
-type Result = "verified" | "expired" | "invalid";
+type Result = "verified" | "already-verified" | "expired" | "invalid";
 
 async function verify(token: string, email: string): Promise<Result> {
   if (!token || !email) return "invalid";
@@ -12,7 +12,16 @@ async function verify(token: string, email: string): Promise<Result> {
   const record = await prisma.verificationToken.findUnique({
     where: { token: hashToken(token) },
   });
-  if (!record || record.identifier !== email) return "invalid";
+  if (!record) {
+    // The token was already used (or never existed). If the account is
+    // verified, the user most likely just clicked the link twice.
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: { emailVerified: true },
+    });
+    return user?.emailVerified ? "already-verified" : "invalid";
+  }
+  if (record.identifier !== email) return "invalid";
 
   if (record.expires <= new Date()) {
     await prisma.verificationToken.deleteMany({ where: { token: record.token } });
@@ -41,10 +50,14 @@ export default async function VerifyPage({
 
   const result = await verify(token, email);
 
-  if (result === "verified") {
+  if (result === "verified" || result === "already-verified") {
     return (
       <AuthShell title="Email verified">
-        <AuthNotice tone="success">Your email is verified. You can now sign in.</AuthNotice>
+        <AuthNotice tone="success">
+          {result === "verified"
+            ? "Your email is verified. You can now sign in."
+            : "Your email is already verified. You can sign in."}
+        </AuthNotice>
         <Link href="/login" className={authLinkClass}>
           Sign in
         </Link>
