@@ -7,9 +7,6 @@ import {
   X,
   Plus,
   Link as LinkIcon,
-  Mail,
-  Loader2,
-  ExternalLink,
 } from "lucide-react";
 
 export interface ReviewItem {
@@ -21,7 +18,16 @@ export interface ReviewItem {
   classification: string;
   confidence: number | null;
   date: string | Date;
-  extractedData: any;
+  extractedData: unknown;
+}
+
+/** Company or role as extracted from the email, if the classifier found one. */
+function extracted(data: unknown, field: "company" | "role"): string {
+  if (data && typeof data === "object" && field in data) {
+    const value = (data as Record<string, unknown>)[field];
+    if (typeof value === "string") return value;
+  }
+  return "";
 }
 
 interface NeedsReviewQueueProps {
@@ -36,11 +42,29 @@ export function NeedsReviewQueue({
   const [items, setItems] = React.useState<ReviewItem[]>(initialItems);
   const [selectedAppMap, setSelectedAppMap] = React.useState<Record<string, string>>({});
   const [resolvingId, setResolvingId] = React.useState<string | null>(null);
+  const [errors, setErrors] = React.useState<Record<string, string>>({});
+  // Company and role as extracted from the email, editable before creating an application.
+  const [drafts, setDrafts] = React.useState<Record<string, { company: string; role: string }>>(() =>
+    Object.fromEntries(
+      initialItems.map((i) => [
+        i.id,
+        { company: extracted(i.extractedData, "company"), role: extracted(i.extractedData, "role") },
+      ])
+    )
+  );
+
+  function updateDraft(id: string, field: "company" | "role", value: string) {
+    setDrafts((prev) => ({
+      ...prev,
+      [id]: { company: prev[id]?.company ?? "", role: prev[id]?.role ?? "", [field]: value },
+    }));
+  }
 
   async function handleAction(eventId: string, action: "approve" | "dismiss", useExisting = false) {
     setResolvingId(eventId);
-    const item = items.find((i) => i.id === eventId);
+    const draft = drafts[eventId];
     const selectedAppId = selectedAppMap[eventId];
+    setErrors((prev) => ({ ...prev, [eventId]: "" }));
 
     try {
       const res = await fetch("/api/email/needs-review", {
@@ -50,17 +74,19 @@ export function NeedsReviewQueue({
           eventId,
           action,
           applicationId: useExisting ? selectedAppId : undefined,
-          company: item?.extractedData?.company || "Unknown Company",
-          role: item?.extractedData?.role || "Software Engineer",
-          stage: "Applied",
+          company: draft?.company.trim(),
+          role: draft?.role.trim(),
         }),
       });
 
       if (res.ok) {
         setItems((prev) => prev.filter((i) => i.id !== eventId));
+      } else {
+        const body = await res.json().catch(() => ({}));
+        setErrors((prev) => ({ ...prev, [eventId]: body.error || "Could not save. Try again." }));
       }
     } catch {
-      console.error("Failed to resolve review item");
+      setErrors((prev) => ({ ...prev, [eventId]: "Could not save. Try again." }));
     } finally {
       setResolvingId(null);
     }
@@ -99,6 +125,8 @@ export function NeedsReviewQueue({
           {items.map((item) => {
             const confidencePercent = Math.round((item.confidence || 0.6) * 100);
             const isResolving = resolvingId === item.id;
+            const draft = drafts[item.id] ?? { company: "", role: "" };
+            const canCreate = draft.company.trim() !== "" && draft.role.trim() !== "";
 
             return (
               <div key={item.id} className="py-4 space-y-3">
@@ -125,6 +153,34 @@ export function NeedsReviewQueue({
                 <p className="text-xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-950 p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800 font-sans">
                   &ldquo;{item.snippet}&rdquo;
                 </p>
+
+                {/* Extracted details, editable before creating an application */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <label className="text-[11px] text-slate-500 dark:text-slate-400 space-y-1">
+                    <span>Company</span>
+                    <input
+                      type="text"
+                      value={draft.company}
+                      onChange={(e) => updateDraft(item.id, "company", e.target.value)}
+                      placeholder="Not detected"
+                      className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </label>
+                  <label className="text-[11px] text-slate-500 dark:text-slate-400 space-y-1">
+                    <span>Role</span>
+                    <input
+                      type="text"
+                      value={draft.role}
+                      onChange={(e) => updateDraft(item.id, "role", e.target.value)}
+                      placeholder="Not detected"
+                      className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </label>
+                </div>
+
+                {errors[item.id] && (
+                  <p className="text-[11px] text-rose-600 dark:text-rose-400">{errors[item.id]}</p>
+                )}
 
                 {/* Actions Bar */}
                 <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
@@ -163,9 +219,10 @@ export function NeedsReviewQueue({
                   <div className="flex items-center gap-2 ml-auto">
                     <button
                       type="button"
-                      disabled={isResolving}
+                      disabled={isResolving || !canCreate}
+                      title={canCreate ? undefined : "Fill in company and role first"}
                       onClick={() => handleAction(item.id, "approve", false)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition-colors shadow-xs"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition-colors shadow-xs disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Plus className="w-3 h-3" />
                       <span>Create Application</span>

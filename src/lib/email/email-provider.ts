@@ -13,8 +13,10 @@ export interface NormalizedEmailMessage {
 }
 
 export interface ExtractedEmailData {
-  company: string;
-  role: string;
+  /** Null when the employer couldn't be determined. */
+  company: string | null;
+  /** Null when the job title couldn't be determined. */
+  role: string | null;
   date: Date;
   classification:
     | "application_confirmation"

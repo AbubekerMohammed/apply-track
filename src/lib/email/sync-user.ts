@@ -32,7 +32,16 @@ export async function syncUserInboxes(userId: string, daysBack = 90): Promise<Us
   for (const { provider } of accounts) {
     const p = provider as MailProvider;
     try {
-      const messages = await fetchRecentMessages(userId, p, daysBack);
+      const known = await prisma.emailEvent.findMany({
+        where: { userId, provider: p, date: { gte: new Date(Date.now() - daysBack * 24 * 3600 * 1000) } },
+        select: { messageId: true },
+      });
+      const messages = await fetchRecentMessages(
+        userId,
+        p,
+        daysBack,
+        new Set(known.map((e) => e.messageId))
+      );
       const r = await processAndSyncEmails(userId, messages);
       for (const key of Object.keys(result) as Array<keyof SyncResult>) {
         result[key] += r[key];

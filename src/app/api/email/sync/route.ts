@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { syncUserInboxes } from "@/lib/email/sync-user";
 
-export const maxDuration = 60;
+// A first 90-day sync can fetch several hundred messages.
+export const maxDuration = 300;
 
 export async function POST() {
   const session = await auth();
