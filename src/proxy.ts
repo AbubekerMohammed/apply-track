@@ -24,9 +24,9 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  if (sessionCookie && (pathname === "/login" || pathname === "/register")) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
-  }
+  // Signed-in users are sent away from /login and /register by those pages
+  // themselves, after auth() validates the session. Doing it here on cookie
+  // presence alone loops forever when the cookie holds a revoked session.
 
   return NextResponse.next();
 }
@@ -38,7 +38,5 @@ export const config = {
     "/targets/:path*",
     "/contacts/:path*",
     "/settings/:path*",
-    "/login",
-    "/register",
   ],
 };
