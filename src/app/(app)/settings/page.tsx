@@ -6,6 +6,7 @@ import { InboxConnections } from "@/components/settings/inbox-connections";
 import { NeedsReviewQueue } from "@/components/settings/needs-review-queue";
 import { WeeklyDigestSettings } from "@/components/settings/weekly-digest-settings";
 import { revalidatePath } from "next/cache";
+import { isDemoMode } from "@/lib/demo-mode";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -77,6 +78,7 @@ export default async function SettingsPage() {
         <InboxConnections
           initialGmailConnected={Boolean(user?.gmailConnected)}
           initialOutlookConnected={Boolean(user?.outlookConnected)}
+          demoMode={isDemoMode()}
         />
       </div>
 

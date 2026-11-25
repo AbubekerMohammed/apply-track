@@ -84,6 +84,9 @@
    AZURE_AD_CLIENT_ID=""
    AZURE_AD_CLIENT_SECRET=""
    AZURE_AD_TENANT_ID="common"
+
+   # Optional: demo logins, test accounts & sample inbox sync ("true" to enable; off by default)
+   ENABLE_DEMO_MODE=
    ```
 
 3. **Push the Prisma schema and start the dev server:**
