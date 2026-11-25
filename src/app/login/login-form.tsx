@@ -30,9 +30,7 @@ export default function LoginForm({
       const cb = params.get("callbackUrl");
       if (cb) setCallbackUrl(cb);
       const err = params.get("error");
-      if (err === "AccountExists") {
-        setError("An account with this email already exists. Sign in with your password.");
-      } else if (err === "OAuthAccountNotLinked") {
+      if (err === "OAuthAccountNotLinked") {
         setError("This email is already registered with a different sign-in method.");
       } else if (err) {
         setError("Sign-in failed. Please try again.");
