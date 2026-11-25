@@ -49,7 +49,7 @@ export async function GET() {
     status: 200,
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="applytrack_applications_${new Date().toISOString().split("T")[0]}.csv"`,
+      "Content-Disposition": `attachment; filename="traill_applications_${new Date().toISOString().split("T")[0]}.csv"`,
     },
   });
 }

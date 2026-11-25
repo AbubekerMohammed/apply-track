@@ -129,8 +129,8 @@ export async function sendVerificationEmail(email: string, origin: string): Prom
   const link = `${origin}/verify?token=${token}&email=${encodeURIComponent(email)}`;
   await deliver({
     to: email,
-    subject: "Verify your ApplyTrack email",
-    intro: "Confirm your email address to finish setting up your ApplyTrack account.",
+    subject: "Verify your Traill email",
+    intro: "Confirm your email address to finish setting up your Traill account.",
     cta: "Verify email",
     link,
     outro: "This link expires in 24 hours. If you didn't create an account, you can ignore this email.",
@@ -145,8 +145,8 @@ export async function sendPasswordResetEmail(email: string, origin: string): Pro
   const link = `${origin}/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
   await deliver({
     to: email,
-    subject: "Reset your ApplyTrack password",
-    intro: "We received a request to reset the password for your ApplyTrack account.",
+    subject: "Reset your Traill password",
+    intro: "We received a request to reset the password for your Traill account.",
     cta: "Choose a new password",
     link,
     outro: "This link expires in 1 hour and can be used once. If you didn't ask for this, you can ignore this email.",

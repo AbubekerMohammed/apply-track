@@ -5,7 +5,7 @@ import { generateWeeklySummary } from "../src/lib/email/weekly-summary";
 import bcrypt from "bcryptjs";
 
 async function runPhase7Tests() {
-  console.log("=== APPLYTRACK PHASE 7 VERIFICATION SUITE ===");
+  console.log("=== TRAILL PHASE 7 VERIFICATION SUITE ===");
   let passed = 0;
   let total = 0;
 
@@ -167,7 +167,7 @@ async function runPhase7Tests() {
     assert(digest !== null, "Weekly summary digest generated successfully");
     assert(digest!.recipientEmail === email, "Recipient email matches user account");
     assert(digest!.appliedCountThisWeek >= 1, "Digest captures applications from past 7 days");
-    assert(digest!.html.includes("ApplyTrack Weekly Digest"), "HTML email contains ApplyTrack header");
+    assert(digest!.html.includes("Traill Weekly Digest"), "HTML email contains Traill header");
     assert(digest!.html.includes("OpenAI"), "HTML email features recent applications");
     assert(digest!.pendingFollowUpsCount >= 1, "HTML email details pending follow-ups");
 

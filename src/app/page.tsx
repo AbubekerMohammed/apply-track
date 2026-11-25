@@ -37,7 +37,7 @@ export default async function HomePage() {
                 <Briefcase className="w-4 h-4" />
               </div>
               <span className="font-bold text-lg tracking-tight text-slate-900 dark:text-white">
-                ApplyTrack
+                Traill
               </span>
             </Link>
 
@@ -83,7 +83,7 @@ export default async function HomePage() {
           </h1>
 
           <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto font-normal leading-relaxed">
-            ApplyTrack connects with Gmail and Outlook to automatically capture confirmation
+            Traill connects with Gmail and Outlook to automatically capture confirmation
             emails, coding assessments, and interview invites. Organize your search pipeline,
             hit daily volume goals, and secure referrals with structured follow-ups.
           </p>
@@ -129,7 +129,7 @@ export default async function HomePage() {
                   <div className="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-700" />
                   <div className="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-700" />
                   <span className="ml-3 text-xs font-mono text-slate-400">
-                    app.applytrack.com/applications
+                    traill.io/applications
                   </span>
                 </div>
                 <div className="flex items-center gap-3 text-xs text-slate-400">
@@ -326,7 +326,7 @@ export default async function HomePage() {
                   Never manually log an application confirmation again.
                 </h2>
                 <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                  Connect your personal or search-specific Gmail and Outlook accounts. ApplyTrack
+                  Connect your personal or search-specific Gmail and Outlook accounts. Traill
                   continuously extracts company names, roles, assessment invites, interview
                   confirmations, and rejection updates without reading your private threads.
                 </p>
@@ -542,7 +542,7 @@ export default async function HomePage() {
             <div className="w-5 h-5 rounded bg-slate-900 dark:bg-white flex items-center justify-center text-white dark:text-slate-900 text-[10px] font-bold">
               A
             </div>
-            <span className="font-semibold text-slate-900 dark:text-white">ApplyTrack</span>
+            <span className="font-semibold text-slate-900 dark:text-white">Traill</span>
             <span className="text-slate-400">&bull; Smart Multi-User Job Application Tracker</span>
           </div>
           <div>

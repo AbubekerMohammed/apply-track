@@ -13,7 +13,7 @@ const BASE_URL = "http://localhost:3000";
 
 async function runTests() {
   console.log("==================================================");
-  console.log("   APPLYTRACK PHASE 1 VERIFICATION & TEST SUITE   ");
+  console.log("   TRAILL PHASE 1 VERIFICATION & TEST SUITE   ");
   console.log("==================================================\n");
 
   let passed = 0;
@@ -34,7 +34,7 @@ async function runTests() {
     const res = await fetch(`${BASE_URL}/`);
     assert(res.status === 200, "Landing page responds with HTTP 200");
     const html = await res.text();
-    assert(html.includes("ApplyTrack"), "Landing page contains 'ApplyTrack' branding");
+    assert(html.includes("Traill"), "Landing page contains 'Traill' branding");
   } catch (err) {
     assert(false, "Landing page responds with HTTP 200", String(err));
   }
@@ -59,8 +59,8 @@ async function runTests() {
   }
 
   // 3. TEST: User Registration API
-  const userAEmail = `alice.${Date.now()}@applytrack.test`;
-  const userBEmail = `bob.${Date.now()}@applytrack.test`;
+  const userAEmail = `alice.${Date.now()}@example.test`;
+  const userBEmail = `bob.${Date.now()}@example.test`;
   const password = "TestPassword123!";
 
   try {
@@ -128,12 +128,12 @@ async function runTests() {
     assert(passwordValid, "Auth: Bcrypt password hash verification succeeded");
 
     // Test B: Google Sign-in test flow
-    let googleUser = await prisma.user.findUnique({ where: { email: "test.google@applytrack.io" } });
+    let googleUser = await prisma.user.findUnique({ where: { email: "test.google@example.test" } });
     if (!googleUser) {
       googleUser = await prisma.user.create({
         data: {
           name: "Google Test User",
-          email: "test.google@applytrack.io",
+          email: "test.google@example.test",
           gmailConnected: true,
         },
       });
@@ -141,12 +141,12 @@ async function runTests() {
     assert(!!googleUser && googleUser.gmailConnected, "Auth: Google account sign-in & profile integration works");
 
     // Test C: Microsoft Sign-in test flow
-    let msUser = await prisma.user.findUnique({ where: { email: "test.microsoft@applytrack.io" } });
+    let msUser = await prisma.user.findUnique({ where: { email: "test.microsoft@example.test" } });
     if (!msUser) {
       msUser = await prisma.user.create({
         data: {
           name: "Microsoft Test User",
-          email: "test.microsoft@applytrack.io",
+          email: "test.microsoft@example.test",
           outlookConnected: true,
         },
       });

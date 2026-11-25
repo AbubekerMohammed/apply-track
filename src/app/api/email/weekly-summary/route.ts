@@ -43,7 +43,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const subject = `Your ApplyTrack Weekly Digest: ${digest.appliedCountThisWeek} applied this week`;
+    const subject = `Your Traill Weekly Digest: ${digest.appliedCountThisWeek} applied this week`;
     await sendEmail({ to: digest.recipientEmail, subject, html: digest.html });
 
     return NextResponse.json({

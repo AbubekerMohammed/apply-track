@@ -26,7 +26,7 @@ function esc(value: unknown): string {
 
 export async function generateWeeklySummary(
   userId: string,
-  appUrl = process.env.APP_URL || "https://applytrack-ten-red.vercel.app"
+  appUrl = process.env.APP_URL || "https://traill.io"
 ): Promise<WeeklySummaryData | null> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -79,7 +79,7 @@ export async function generateWeeklySummary(
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Your ApplyTrack Weekly Career Digest</title>
+  <title>Your Traill Weekly Career Digest</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 24px; color: #1e293b; }
     .card { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
@@ -100,7 +100,7 @@ export async function generateWeeklySummary(
 <body>
   <div class="card">
     <div class="header">
-      <h1>ApplyTrack Weekly Digest</h1>
+      <h1>Traill Weekly Digest</h1>
       <p>Hello ${esc(recipientName)}, here is your job search summary for the past 7 days.</p>
     </div>
     <div class="content">
@@ -166,11 +166,11 @@ export async function generateWeeklySummary(
       }
 
       <div style="text-align: center;">
-        <a href="${esc(appUrl)}/dashboard" class="cta-btn">Open ApplyTrack Dashboard</a>
+        <a href="${esc(appUrl)}/dashboard" class="cta-btn">Open Traill Dashboard</a>
       </div>
     </div>
     <div class="footer">
-      ApplyTrack • Smart Job Application Tracker • Scoped to ${esc(user.email)}
+      Traill • Smart Job Application Tracker • Scoped to ${esc(user.email)}
     </div>
   </div>
 </body>

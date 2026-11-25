@@ -1,8 +1,8 @@
-# ApplyTrack
+# Traill
 
-**ApplyTrack** is a full-stack, multi-user job application tracker built to manage high-volume job searches from initial outreach to signed offer. It connects with Gmail and Outlook to automatically detect application confirmations and status updates, tracks daily application goals and streaks, and structures referral outreach so promising leads don't go cold.
+**Traill** is a full-stack, multi-user job application tracker built to manage high-volume job searches from initial outreach to signed offer. It connects with Gmail and Outlook to automatically detect application confirmations and status updates, tracks daily application goals and streaks, and structures referral outreach so promising leads don't go cold.
 
-**Live Production App:** [https://applytrack-ten-red.vercel.app](https://applytrack-ten-red.vercel.app)
+**Live Production App:** [https://traill.io](https://traill.io)
 
 ---
 
@@ -88,7 +88,7 @@
 
    # Optional: weekly digest delivery via Resend
    RESEND_API_KEY=""
-   EMAIL_FROM="ApplyTrack <digest@yourdomain.com>"
+   EMAIL_FROM="Traill <digest@yourdomain.com>"
 
    # Required in production for the daily inbox-sync cron (vercel.json)
    CRON_SECRET=""
