@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NormalizedEmailMessage } from "./email-provider";
 import { classifyEmail } from "./classifier";
+import { nextStage, pickApplication } from "./matching";
 
 export interface SyncResult {
   totalProcessed: number;
@@ -11,185 +12,188 @@ export interface SyncResult {
   unrelatedSkipped: number;
 }
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+const STAGE_NOTES: Record<string, string> = {
+  Assessment: "Assessment invite detected",
+  "Recruiter Call": "Recruiter outreach detected",
+  Interviewing: "Interview invitation received",
+  Offer: "Job offer detected",
+  Rejected: "Rejection email received",
+  Applied: "Application confirmation received",
+};
+
 export async function processAndSyncEmails(
   userId: string,
   messages: NormalizedEmailMessage[]
 ): Promise<SyncResult> {
-  let newApplicationsCreated = 0;
-  let stagesUpdated = 0;
-  let needsReviewCount = 0;
-  let duplicatesSkipped = 0;
-  let totalProcessed = 0;
-  let unrelatedSkipped = 0;
+  const result: SyncResult = {
+    totalProcessed: 0,
+    newApplicationsCreated: 0,
+    stagesUpdated: 0,
+    needsReviewCount: 0,
+    duplicatesSkipped: 0,
+    unrelatedSkipped: 0,
+  };
+  if (!messages.length) return result;
 
-  for (const message of messages) {
-    // 1. De-duplication check by messageId
-    const existingEvent = await prisma.emailEvent.findFirst({
-      where: {
-        userId,
-        provider: message.provider,
-        messageId: message.messageId,
-      },
-    });
+  // Oldest first, so a confirmation creates the application before the
+  // rejection or interview invite that follows it is matched against it.
+  const ordered = [...messages].sort((a, b) => a.date.getTime() - b.date.getTime());
 
-    if (existingEvent) {
-      duplicatesSkipped++;
+  const seen = await prisma.emailEvent.findMany({
+    where: {
+      userId,
+      OR: [
+        { provider: "gmail", messageId: { in: ordered.filter((m) => m.provider === "gmail").map((m) => m.messageId) } },
+        { provider: "outlook", messageId: { in: ordered.filter((m) => m.provider === "outlook").map((m) => m.messageId) } },
+      ],
+    },
+    select: { provider: true, messageId: true },
+  });
+  const seenKeys = new Set(seen.map((e) => `${e.provider}:${e.messageId}`));
+
+  // Loaded once and kept current as this sync creates and moves applications.
+  const applications = await prisma.application.findMany({
+    where: { userId },
+    select: { id: true, company: true, role: true, stage: true, updatedAt: true },
+    orderBy: { updatedAt: "desc" },
+  });
+
+  for (const message of ordered) {
+    const key = `${message.provider}:${message.messageId}`;
+    if (seenKeys.has(key)) {
+      result.duplicatesSkipped++;
       continue;
     }
+    seenKeys.add(key);
 
-    // 2. Cross-provider de-duplication check:
-    // If same subject and sender received within 24 hours from other provider
+    // The same email delivered to both a Gmail and an Outlook inbox you've
+    // connected: same subject and sender, arriving within a day.
     const crossProviderDuplicate = await prisma.emailEvent.findFirst({
       where: {
         userId,
+        provider: { not: message.provider },
         subject: message.subject,
         sender: message.sender,
+        date: {
+          gte: new Date(message.date.getTime() - DAY_MS),
+          lte: new Date(message.date.getTime() + DAY_MS),
+        },
       },
+      select: { id: true },
     });
-
     if (crossProviderDuplicate) {
-      duplicatesSkipped++;
+      result.duplicatesSkipped++;
       continue;
     }
 
-    // 3. Classify message
     const extracted = await classifyEmail(message);
 
     // Mail that isn't about a job application is ignored entirely and never stored.
     if (extracted.classification === "other") {
-      unrelatedSkipped++;
+      result.unrelatedSkipped++;
       continue;
     }
-    totalProcessed++;
+    result.totalProcessed++;
 
-    // 4. Try to find an existing matching application
-    let matchingApp = null;
-    if (extracted.company && extracted.company !== "Unknown Company") {
-      const userApps = await prisma.application.findMany({
-        where: { userId },
-        orderBy: { updatedAt: "desc" },
-      });
+    let needsReview = extracted.needsReview;
+    let linkedApplicationId: string | null = null;
 
-      matchingApp = userApps.find((app) => {
-        const appComp = app.company.toLowerCase().trim();
-        const extComp = extracted.company.toLowerCase().trim();
-        return (
-          appComp.includes(extComp) ||
-          extComp.includes(appComp) ||
-          (appComp.split(" ")[0].length > 2 &&
-            appComp.split(" ")[0] === extComp.split(" ")[0])
-        );
-      }) || null;
-    }
+    if (!needsReview) {
+      const pick = pickApplication(applications, extracted.company, extracted.role, extracted.classification);
 
-    let linkedApplicationId: string | null = matchingApp?.id || null;
-
-    // 5. High-confidence actions
-    if (!extracted.needsReview) {
-      if (extracted.classification === "application_confirmation") {
-        if (!matchingApp) {
-          // Auto-create new application
-          const newApp = await prisma.application.create({
-            data: {
-              userId,
-              company: extracted.company,
-              role: extracted.role,
-              stage: "Applied",
-              source: `${message.provider.toUpperCase()} Email Detection`,
-              dateApplied: extracted.date,
-              stageHistory: {
-                create: {
-                  fromStage: null,
-                  toStage: "Applied",
-                  notes: `Auto-created from ${message.provider.toUpperCase()} confirmation email`,
-                },
-              },
-            },
-          });
-          matchingApp = newApp;
-          linkedApplicationId = newApp.id;
-          newApplicationsCreated++;
-        }
-      } else if (matchingApp) {
-        // Map classification to stage update
-        let newStage: string | null = null;
-        let updateNote = "";
-
-        switch (extracted.classification) {
-          case "assessment_invite":
-            newStage = "Assessment";
-            updateNote = `Assessment invite detected (${extracted.platform || "OA"})`;
-            break;
-          case "recruiter_outreach":
-            newStage = "Recruiter Call";
-            updateNote = "Recruiter outreach detected";
-            break;
-          case "interview_invite":
-            newStage = "Interviewing";
-            updateNote = "Interview invitation received";
-            break;
-          case "offer":
-            newStage = "Offer";
-            updateNote = "Job offer detected";
-            break;
-          case "rejection":
-            newStage = "Rejected";
-            updateNote = "Rejection email received";
-            break;
-        }
-
-        if (newStage && matchingApp.stage !== newStage) {
+      if (pick.kind === "match") {
+        const app = pick.application;
+        linkedApplicationId = app.id;
+        const stage = nextStage(app.stage, extracted.classification);
+        if (stage) {
           await prisma.application.update({
-            where: { id: matchingApp.id },
+            where: { id: app.id },
             data: {
-              stage: newStage,
+              stage,
               stageHistory: {
                 create: {
-                  fromStage: matchingApp.stage,
-                  toStage: newStage,
-                  notes: updateNote,
+                  fromStage: app.stage,
+                  toStage: stage,
+                  notes:
+                    stage === "Assessment" && extracted.platform
+                      ? `Assessment invite detected (${extracted.platform})`
+                      : STAGE_NOTES[stage],
                 },
               },
             },
           });
-          stagesUpdated++;
+          app.stage = stage;
+          result.stagesUpdated++;
         }
+      } else if (pick.kind === "none" && extracted.classification === "application_confirmation") {
+        const created = await prisma.application.create({
+          data: {
+            userId,
+            company: extracted.company!,
+            role: extracted.role!,
+            stage: "Applied",
+            source: extracted.platform
+              ? `${extracted.platform} (via ${providerName(message.provider)})`
+              : `${providerName(message.provider)} Email Detection`,
+            dateApplied: extracted.date,
+            stageHistory: {
+              create: {
+                fromStage: null,
+                toStage: "Applied",
+                notes: `Auto-created from ${providerName(message.provider)} confirmation email`,
+              },
+            },
+          },
+          select: { id: true, company: true, role: true, stage: true, updatedAt: true },
+        });
+        applications.unshift(created);
+        linkedApplicationId = created.id;
+        result.newApplicationsCreated++;
+      } else {
+        // An update for a company with no tracked application, or one that
+        // fits several: let the user decide instead of guessing.
+        needsReview = true;
       }
-    } else {
-      needsReviewCount++;
     }
 
-    // 6. Record EmailEvent (NEVER store full body, only snippet and extracted data!)
-    await prisma.emailEvent.create({
-      data: {
-        userId,
-        applicationId: linkedApplicationId,
-        provider: message.provider,
-        messageId: message.messageId,
-        threadId: message.threadId || null,
-        date: message.date,
-        sender: message.sender,
-        subject: message.subject,
-        snippet: message.snippet.slice(0, 300), // Max snippet 300 chars
-        classification: extracted.classification,
-        confidence: extracted.confidence,
-        extractedData: {
-          company: extracted.company,
-          role: extracted.role,
-          platform: extracted.platform,
+    if (needsReview) result.needsReviewCount++;
+
+    // Never store the full body: only the snippet and what was extracted.
+    try {
+      await prisma.emailEvent.create({
+        data: {
+          userId,
+          applicationId: linkedApplicationId,
+          provider: message.provider,
+          messageId: message.messageId,
+          threadId: message.threadId || null,
+          date: message.date,
+          sender: message.sender,
+          subject: message.subject,
+          snippet: message.snippet.slice(0, 300),
+          classification: extracted.classification,
+          confidence: needsReview ? Math.min(extracted.confidence, 0.65) : extracted.confidence,
+          extractedData: {
+            company: extracted.company,
+            role: extracted.role,
+            platform: extracted.platform ?? null,
+          },
+          needsReview,
+          isProcessed: true,
         },
-        needsReview: extracted.needsReview,
-        isProcessed: true,
-      },
-    });
+      });
+    } catch (err) {
+      // A concurrent sync (cron plus "Sync Now") already stored this message.
+      if ((err as { code?: string }).code !== "P2002") throw err;
+      result.duplicatesSkipped++;
+    }
   }
 
-  return {
-    totalProcessed,
-    newApplicationsCreated,
-    stagesUpdated,
-    needsReviewCount,
-    duplicatesSkipped,
-    unrelatedSkipped,
-  };
+  return result;
+}
+
+function providerName(provider: NormalizedEmailMessage["provider"]) {
+  return provider === "gmail" ? "Gmail" : "Outlook";
 }

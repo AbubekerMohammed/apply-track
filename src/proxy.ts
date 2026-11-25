@@ -1,14 +1,16 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+const SESSION_COOKIE = /^(?:__Secure-)?(?:authjs|next-auth)\.session-token(?:\.\d+)?$/;
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const sessionCookie =
-    request.cookies.get("authjs.session-token")?.value ||
-    request.cookies.get("__Secure-authjs.session-token")?.value ||
-    request.cookies.get("next-auth.session-token")?.value ||
-    request.cookies.get("__Secure-next-auth.session-token")?.value;
+  // Auth.js splits a session cookie over 4 KB into "<name>.0", "<name>.1", ...
+  // Missing those chunks bounced signed-in users between here and /login.
+  const sessionCookie = request.cookies
+    .getAll()
+    .some((c) => SESSION_COOKIE.test(c.name) && c.value);
 
   const isProtected = [
     "/dashboard",
