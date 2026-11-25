@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth, googleAuthEnabled, microsoftAuthEnabled } from "@/auth";
 import { safeCallbackUrl } from "@/lib/safe-redirect";
+import { isEmailDeliveryAvailable } from "@/lib/auth-tokens";
 import { LoginForm } from "./login-form";
 
 export default async function LoginPage({
@@ -22,6 +23,7 @@ export default async function LoginPage({
       callbackUrl={callbackUrl}
       initialError={error}
       registered={params.registered === "true"}
+      emailAvailable={isEmailDeliveryAvailable()}
     />
   );
 }

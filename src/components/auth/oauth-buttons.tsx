@@ -8,7 +8,8 @@ interface OAuthButtonsProps {
   microsoft: boolean;
   callbackUrl: string;
   disabled?: boolean;
-  dividerLabel: string;
+  /** Omit to hide the divider (e.g. when no form follows the buttons). */
+  dividerLabel?: string;
 }
 
 export function OAuthButtons({
@@ -67,12 +68,14 @@ export function OAuthButtons({
         )}
       </div>
 
-      <div className="relative flex items-center justify-center">
-        <div className="border-t border-slate-200 dark:border-slate-800 w-full" />
-        <span className="bg-white dark:bg-[#111622] px-3 text-[11px] uppercase tracking-wider text-slate-400 font-medium absolute">
-          {dividerLabel}
-        </span>
-      </div>
+      {dividerLabel && (
+        <div className="relative flex items-center justify-center">
+          <div className="border-t border-slate-200 dark:border-slate-800 w-full" />
+          <span className="bg-white dark:bg-[#111622] px-3 text-[11px] uppercase tracking-wider text-slate-400 font-medium absolute">
+            {dividerLabel}
+          </span>
+        </div>
+      )}
     </>
   );
 }

@@ -7,6 +7,7 @@ import { signIn } from "next-auth/react";
 import { Briefcase, ArrowRight, Lock, Mail, AlertCircle, CheckCircle2 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { OAuthButtons } from "@/components/auth/oauth-buttons";
+import { ResendVerificationButton } from "@/components/auth/resend-verification-button";
 
 const AUTH_ERROR_MESSAGES: Record<string, string> = {
   CredentialsSignin: "Incorrect email or password.",
@@ -23,6 +24,8 @@ interface LoginFormProps {
   callbackUrl: string;
   initialError?: string;
   registered?: boolean;
+  /** False when account emails can't be sent; hides resend and password recovery. */
+  emailAvailable: boolean;
 }
 
 export function LoginForm({
@@ -31,6 +34,7 @@ export function LoginForm({
   callbackUrl,
   initialError,
   registered,
+  emailAvailable,
 }: LoginFormProps) {
   const router = useRouter();
   const [email, setEmail] = React.useState("");
@@ -41,10 +45,12 @@ export function LoginForm({
       : null
   );
   const [loading, setLoading] = React.useState(false);
+  const [unverifiedEmail, setUnverifiedEmail] = React.useState<string | null>(null);
 
   async function handleEmailLogin(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setUnverifiedEmail(null);
     setLoading(true);
 
     try {
@@ -55,7 +61,10 @@ export function LoginForm({
       });
 
       if (!res || res.error) {
-        setError(AUTH_ERROR_MESSAGES.CredentialsSignin);
+        // "email_not_verified" is thrown by the credentials provider in src/auth.ts.
+        const notVerified = res?.code === "email_not_verified";
+        setUnverifiedEmail(notVerified ? email : null);
+        setError(notVerified ? "Please verify your email first." : AUTH_ERROR_MESSAGES.CredentialsSignin);
         setLoading(false);
         return;
       }
@@ -116,6 +125,15 @@ export function LoginForm({
             </div>
           )}
 
+          {unverifiedEmail &&
+            (emailAvailable ? (
+              <ResendVerificationButton email={unverifiedEmail} />
+            ) : (
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                We can&apos;t send verification emails right now. Please continue with Google.
+              </p>
+            ))}
+
           <OAuthButtons
             google={google}
             microsoft={microsoft}
@@ -148,12 +166,22 @@ export function LoginForm({
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1"
-              >
-                Password
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label
+                  htmlFor="password"
+                  className="block text-xs font-medium text-slate-700 dark:text-slate-300"
+                >
+                  Password
+                </label>
+                {emailAvailable && (
+                  <Link
+                    href="/forgot-password"
+                    className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    Forgot password?
+                  </Link>
+                )}
+              </div>
               <div className="relative">
                 <input
                   id="password"

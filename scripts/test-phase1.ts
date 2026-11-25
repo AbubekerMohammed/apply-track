@@ -101,6 +101,12 @@ async function runTests() {
       }),
     });
     assert(dupRes.status === 409, "Sign-up API: Duplicate email correctly rejected with 409");
+
+    // New email/password accounts can't sign in until verified; skip the email step.
+    await prisma.user.updateMany({
+      where: { email: { in: [userAEmail, userBEmail] } },
+      data: { emailVerified: new Date() },
+    });
   } catch (err) {
     assert(false, "User Registration API", String(err));
   }

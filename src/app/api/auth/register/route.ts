@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { EMAIL_SIGNUP_UNAVAILABLE_MESSAGE } from "@/lib/auth-messages";
+import { appOrigin, isEmailDeliveryAvailable, sendVerificationEmail } from "@/lib/auth-tokens";
 
 export async function POST(req: Request) {
+  if (!isEmailDeliveryAvailable()) {
+    return NextResponse.json({ error: EMAIL_SIGNUP_UNAVAILABLE_MESSAGE }, { status: 503 });
+  }
+
   try {
     const body = await req.json();
     const { name, email, password } = body;
@@ -52,9 +58,20 @@ export async function POST(req: Request) {
       },
     });
 
+    // The account can't sign in with its password until the emailed link is
+    // opened. If delivery fails, the user can resend from the login page.
+    let verificationSent = true;
+    try {
+      await sendVerificationEmail(cleanEmail, appOrigin(req));
+    } catch (error) {
+      verificationSent = false;
+      console.error("Failed to send verification email:", error);
+    }
+
     return NextResponse.json(
       {
         success: true,
+        verificationSent,
         user: {
           id: user.id,
           name: user.name,
