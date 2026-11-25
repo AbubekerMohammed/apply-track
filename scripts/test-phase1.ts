@@ -267,13 +267,10 @@ async function runTests() {
     const loginHtml = await loginHtmlRes.text();
     assert(loginHtml.includes("Sign in with Email"), "UI: Login page provides Email login");
 
-    // Google/Microsoft buttons only render in demo mode or when their OAuth env vars are set.
+    // Google/Microsoft buttons only render when their OAuth env vars are set.
     // These env vars must match the ones the server under test was started with.
-    const demoMode = process.env.ENABLE_DEMO_MODE === "true";
-    const googleEnabled =
-      demoMode || !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
-    const microsoftEnabled =
-      demoMode || !!(process.env.AZURE_AD_CLIENT_ID && process.env.AZURE_AD_CLIENT_SECRET);
+    const googleEnabled = !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
+    const microsoftEnabled = !!(process.env.AZURE_AD_CLIENT_ID && process.env.AZURE_AD_CLIENT_SECRET);
 
     if (googleEnabled) {
       assert(loginHtml.includes("Google"), "UI: Login page provides Google login option");
@@ -282,7 +279,7 @@ async function runTests() {
       assert(loginHtml.includes("Microsoft"), "UI: Login page provides Microsoft login option");
     }
     if (!googleEnabled && !microsoftEnabled) {
-      console.log("⏭️  SKIP: Google/Microsoft login check (demo mode off, no OAuth configured)");
+      console.log("⏭️  SKIP: Google/Microsoft login check (no OAuth configured)");
     }
 
     assert(

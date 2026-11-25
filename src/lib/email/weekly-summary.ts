@@ -15,7 +15,19 @@ export interface WeeklySummaryData {
   html: string;
 }
 
-export async function generateWeeklySummary(userId: string): Promise<WeeklySummaryData | null> {
+function esc(value: unknown): string {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+export async function generateWeeklySummary(
+  userId: string,
+  appUrl = process.env.APP_URL || "https://applytrack-ten-red.vercel.app"
+): Promise<WeeklySummaryData | null> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
   });
@@ -89,7 +101,7 @@ export async function generateWeeklySummary(userId: string): Promise<WeeklySumma
   <div class="card">
     <div class="header">
       <h1>ApplyTrack Weekly Digest</h1>
-      <p>Hello ${recipientName}, here is your job search summary for the past 7 days.</p>
+      <p>Hello ${esc(recipientName)}, here is your job search summary for the past 7 days.</p>
     </div>
     <div class="content">
       <div class="metrics-grid">
@@ -118,7 +130,7 @@ export async function generateWeeklySummary(userId: string): Promise<WeeklySumma
       ${recentApps
         .map(
           (a) =>
-            `<div class="app-item"><strong>${a.company}</strong> — ${a.role}</div>`
+            `<div class="app-item"><strong>${esc(a.company)}</strong> — ${esc(a.role)}</div>`
         )
         .join("")}
       `
@@ -132,7 +144,7 @@ export async function generateWeeklySummary(userId: string): Promise<WeeklySumma
       ${pendingOutreaches
         .map(
           (o) =>
-            `<div class="app-item"><strong>${o.contact.name}</strong> (${o.contact.company}) — Contacted via ${o.channel}</div>`
+            `<div class="app-item"><strong>${esc(o.contact.name)}</strong> (${esc(o.contact.company)}) — Contacted via ${esc(o.channel)}</div>`
         )
         .join("")}
       `
@@ -146,7 +158,7 @@ export async function generateWeeklySummary(userId: string): Promise<WeeklySumma
       ${topTargets
         .map(
           (t) =>
-            `<div class="app-item"><strong>${t.name}</strong> (${t.priority} Priority) — ${t.targetRole || "Any Open Role"}</div>`
+            `<div class="app-item"><strong>${esc(t.name)}</strong> (${esc(t.priority)} Priority) — ${esc(t.targetRole || "Any Open Role")}</div>`
         )
         .join("")}
       `
@@ -154,11 +166,11 @@ export async function generateWeeklySummary(userId: string): Promise<WeeklySumma
       }
 
       <div style="text-align: center;">
-        <a href="http://localhost:3000/dashboard" class="cta-btn">Open ApplyTrack Dashboard</a>
+        <a href="${esc(appUrl)}/dashboard" class="cta-btn">Open ApplyTrack Dashboard</a>
       </div>
     </div>
     <div class="footer">
-      ApplyTrack • Smart Job Application Tracker • Scoped to ${user.email}
+      ApplyTrack • Smart Job Application Tracker • Scoped to ${esc(user.email)}
     </div>
   </div>
 </body>
