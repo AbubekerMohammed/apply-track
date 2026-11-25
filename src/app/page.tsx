@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { isDemoMode } from "@/lib/demo-mode";
 import {
   Briefcase,
   ArrowRight,
@@ -96,12 +97,14 @@ export default async function HomePage() {
               <span>Start Tracking Free</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
-            <Link
-              href="/login"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-medium text-sm hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
-            >
-              <span>Open Demo Workspace</span>
-            </Link>
+            {isDemoMode() && (
+              <Link
+                href="/login"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-medium text-sm hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
+              >
+                <span>Open Demo Workspace</span>
+              </Link>
+            )}
           </div>
 
           <div className="pt-4 flex items-center justify-center gap-6 text-xs text-slate-500 dark:text-slate-400">

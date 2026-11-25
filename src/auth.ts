@@ -4,6 +4,7 @@ import Google from "next-auth/providers/google";
 import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { isDemoMode } from "@/lib/demo-mode";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -35,6 +36,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         demoProvider: { label: "Demo Provider", type: "text" },
       },
       async authorize(credentials) {
+        // Demo logins are only allowed when ENABLE_DEMO_MODE is on
+        if (credentials?.demoProvider && !isDemoMode()) {
+          return null;
+        }
+
         // Support 1-click test login for Google & Microsoft accounts
         if (credentials?.demoProvider === "google") {
           const testEmail = "test.google@applytrack.io";

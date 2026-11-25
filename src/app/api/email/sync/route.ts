@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { isDemoMode } from "@/lib/demo-mode";
 import { processAndSyncEmails } from "@/lib/email/sync-engine";
 import { NormalizedEmailMessage } from "@/lib/email/email-provider";
 
@@ -8,6 +9,10 @@ export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!isDemoMode()) {
+    return NextResponse.json({ error: "Inbox sync not available yet" }, { status: 501 });
   }
 
   const userId = session.user.id;

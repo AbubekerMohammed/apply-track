@@ -16,13 +16,16 @@ interface InboxConnectionsProps {
   initialGmailConnected: boolean;
   initialOutlookConnected: boolean;
   onSyncComplete?: () => void;
+  demoMode?: boolean;
 }
 
 export function InboxConnections({
   initialGmailConnected,
   initialOutlookConnected,
   onSyncComplete,
+  demoMode = false,
 }: InboxConnectionsProps) {
+  const comingSoon = !demoMode;
   const [gmailConnected, setGmailConnected] = React.useState(initialGmailConnected);
   const [outlookConnected, setOutlookConnected] = React.useState(initialOutlookConnected);
   const [syncing, setSyncing] = React.useState(false);
@@ -137,12 +140,14 @@ export function InboxConnections({
             </div>
             <span
               className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                gmailConnected
+                comingSoon
+                  ? "bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400"
+                  : gmailConnected
                   ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400"
                   : "bg-slate-100 dark:bg-slate-800 text-slate-500"
               }`}
             >
-              {gmailConnected ? "Connected" : "Disconnected"}
+              {comingSoon ? "Coming soon" : gmailConnected ? "Connected" : "Disconnected"}
             </span>
           </div>
 
@@ -152,7 +157,7 @@ export function InboxConnections({
           </p>
 
           <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-            {gmailConnected ? (
+            {gmailConnected && !comingSoon ? (
               <button
                 type="button"
                 onClick={() => handleToggleConnection("gmail", false)}
@@ -164,7 +169,8 @@ export function InboxConnections({
               <button
                 type="button"
                 onClick={() => handleToggleConnection("gmail", true)}
-                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-xs transition-colors"
+                disabled={comingSoon}
+                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
               >
                 Connect Gmail
               </button>
@@ -188,12 +194,14 @@ export function InboxConnections({
             </div>
             <span
               className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                outlookConnected
+                comingSoon
+                  ? "bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400"
+                  : outlookConnected
                   ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400"
                   : "bg-slate-100 dark:bg-slate-800 text-slate-500"
               }`}
             >
-              {outlookConnected ? "Connected" : "Disconnected"}
+              {comingSoon ? "Coming soon" : outlookConnected ? "Connected" : "Disconnected"}
             </span>
           </div>
 
@@ -203,7 +211,7 @@ export function InboxConnections({
           </p>
 
           <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-            {outlookConnected ? (
+            {outlookConnected && !comingSoon ? (
               <button
                 type="button"
                 onClick={() => handleToggleConnection("outlook", false)}
@@ -215,7 +223,8 @@ export function InboxConnections({
               <button
                 type="button"
                 onClick={() => handleToggleConnection("outlook", true)}
-                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-xs transition-colors"
+                disabled={comingSoon}
+                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
               >
                 Connect Outlook
               </button>
@@ -239,8 +248,8 @@ export function InboxConnections({
           <button
             type="button"
             onClick={handleSyncNow}
-            disabled={syncing}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition-colors shadow-xs disabled:opacity-50 shrink-0"
+            disabled={syncing || comingSoon}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition-colors shadow-xs disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600 shrink-0"
           >
             {syncing ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
